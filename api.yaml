@@ -13,17 +13,6 @@ servers:
     description: Production server
 
 components:
-  securitySchemes:
-    oauth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://www.pathofexile.com/oauth/authorize
-          tokenUrl: https://www.pathofexile.com/oauth/token
-          scopes:
-            schema:read: Read schema definitions
-            schema:write: Write schema definitions
-
   schemas:
     Scalar:
       oneOf:
@@ -217,8 +206,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      security:
-        - oauth2: ['schema:write']
 
   /enums/search:
     post:
@@ -272,8 +259,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      security:
-        - oauth2: ['schema:read']
 
   /healthz:
     get:
@@ -299,7 +284,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      security: []  # No authentication required
 
   /datfiles/{datfile}/column-claims:
     post:
@@ -384,8 +368,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      security:
-        - oauth2: ['schema:write']
 
   /datfiles/{datfile}/column-claims/search:
     post:
@@ -471,8 +453,3 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      security:
-        - oauth2: ['schema:read']
-
-security:
-  - oauth2: ['schema:read']
