@@ -26,21 +26,44 @@ components:
 
   schemas:
     Scalar:
-      type: string
-      enum:
-        - Unknown
-        - SelfRow
-        - ForeignRow
-        - EnumRow
-        - Bool
-        - String
-        - I16
-        - U16
-        - I32
-        - U32
-        - F32
-        - I64
-        - U64
+      oneOf:
+        - type: string
+          enum:
+            - Unknown
+            - SelfRow
+            - Bool
+            - String
+            - I16
+            - U16
+            - I32
+            - U32
+            - F32
+            - I64
+            - U64
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - ForeignRow
+            target:
+              type: string
+              description: The target datfile this foreign row points to
+          required:
+            - type
+            - target
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - EnumRow
+            enum_name:
+              type: string
+              description: The name of the enum this row points to
+          required:
+            - type
+            - enum_name
 
     Cell:
       type: object
@@ -81,11 +104,35 @@ components:
         source:
           type: string
           description: Identity of the user or tool that created the column claim
+        datfile:
+          type: string
+          description: The datfile this column claim references (e.g., 'mods' for 'data/mods.datc64')
       required:
         - offset
         - bytes
         - column_type
         - source
+        - datfile
+
+    Enum:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the enum
+        values:
+          type: array
+          items:
+            type: string
+          description: Ordered list of enum values
+        zero_indexed:
+          type: boolean
+          description: Whether the enum is zero-indexed (true) or one-indexed (false)
+          default: true
+      required:
+        - name
+        - values
+        - zero_indexed
 
     Error:
       type: object
@@ -100,6 +147,134 @@ components:
         - message
 
 paths:
+  /enums:
+    post:
+      summary: Create or update enums
+      description: |
+        Declarative endpoint to create, update, or delete enums.
+        - To create an enum, provide a complete Enum object
+        - To update an enum, provide the name and fields to update
+        - To delete an enum, provide the name with a null value
+      operationId: manageEnums
+      tags:
+        - Enums
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/Enum'
+                  - type: object
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        type: 'null'
+                    required:
+                      - name
+                      - value
+      responses:
+        '200':
+          description: Operation completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: integer
+                  updated:
+                    type: integer
+                  deleted:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type: integer
+                        error:
+                          $ref: '#/components/schemas/Error'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - oauth2: ['schema:write']
+
+  /enums/search:
+    post:
+      summary: Search for enums
+      description: |
+        Search for enums based on provided criteria.
+        All search parameters are optional and combined with AND logic.
+      operationId: searchEnums
+      tags:
+        - Enums
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Filter by name (partial match)
+                value:
+                  type: string
+                  description: Filter by enum value (contains)
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Enum'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - oauth2: ['schema:read']
+
   /healthz:
     get:
       summary: Health check endpoint
@@ -126,7 +301,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security: []  # No authentication required
 
-  /column-claims:
+  /datfiles/{datfile}/column-claims:
     post:
       summary: Create or update column claims
       description: |
@@ -135,6 +310,13 @@ paths:
         - To update a claim, provide at least source, offset, and column_type (for identification) plus fields to update
         - To delete a claim, provide source, offset, and column_type with a null value
       operationId: manageColumnClaims
+      parameters:
+        - name: datfile
+          in: path
+          required: true
+          description: The datfile identifier (e.g., 'mods' for 'data/mods.datc64')
+          schema:
+            type: string
       tags:
         - ColumnClaims
       requestBody:
@@ -205,13 +387,20 @@ paths:
       security:
         - oauth2: ['schema:write']
 
-  /column-claims/search:
+  /datfiles/{datfile}/column-claims/search:
     post:
       summary: Search for column claims
       description: |
         Search for column claims based on provided criteria.
         All search parameters are optional and combined with AND logic.
       operationId: searchColumnClaims
+      parameters:
+        - name: datfile
+          in: path
+          required: true
+          description: The datfile identifier (e.g., 'mods' for 'data/mods.datc64')
+          schema:
+            type: string
       tags:
         - ColumnClaims
       requestBody:
@@ -257,7 +446,13 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ColumnClaim'
+                      allOf:
+                        - $ref: '#/components/schemas/ColumnClaim'
+                        - type: object
+                          properties:
+                            datfile:
+                              type: string
+                              readOnly: true
                   total:
                     type: integer
                   page:
