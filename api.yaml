@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: Path of Exile Schema Management API
+  description: |
+    A declarative management API for community schema definitions of Path of Exile tabular data files.
+    This API manages `ColumnClaims` which represent columns in binary database files.
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://poe-schema.obsoleet.org/support
+servers:
+  - url: https://poe-schema.obsoleet.org
+    description: Production server
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://www.pathofexile.com/oauth/authorize
+          tokenUrl: https://www.pathofexile.com/oauth/token
+          scopes:
+            schema:read: Read schema definitions
+            schema:write: Write schema definitions
+
+  schemas:
+    Scalar:
+      type: string
+      enum:
+        - Unknown
+        - SelfRow
+        - ForeignRow
+        - EnumRow
+        - Bool
+        - String
+        - I16
+        - U16
+        - I32
+        - U32
+        - F32
+        - I64
+        - U64
+      
+    Cell:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - Scalar
+            - Array
+        scalar:
+          $ref: '#/components/schemas/Scalar'
+      required:
+        - type
+        - scalar
+      
+    ColumnClaim:
+      type: object
+      properties:
+        name:
+          type: string
+          description: User-defined name of the column claim (optional)
+        offset:
+          type: integer
+          description: Byte offset in each row of the table
+          minimum: 0
+        bytes:
+          type: integer
+          description: Number of bytes the column claim occupies, starting at offset
+          minimum: 1
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Arbitrary metadata about the claim
+        column_type:
+          $ref: '#/components/schemas/Cell'
+        source:
+          type: string
+          description: Identity of the user or tool that created the column claim
+      required:
+        - offset
+        - bytes
+        - column_type
+        - source
+      
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+paths:
+  /healthz:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+        '500':
+          description: API is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []  # No authentication required
+
+  /column-claims:
+    post:
+      summary: Create or update column claims
+      description: |
+        Declarative endpoint to create, update, or delete column claims.
+        - To create a claim, provide a complete ColumnClaim object
+        - To update a claim, provide at least source, offset, and column_type (for identification) plus fields to update
+        - To delete a claim, provide source, offset, and column_type with a null value
+      operationId: manageColumnClaims
+      tags:
+        - ColumnClaims
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/ColumnClaim'
+                  - type: object
+                    properties:
+                      source:
+                        type: string
+                      offset:
+                        type: integer
+                      column_type:
+                        $ref: '#/components/schemas/Cell'
+                      value:
+                        type: 'null'
+                    required:
+                      - source
+                      - offset
+                      - column_type
+                      - value
+      responses:
+        '200':
+          description: Operation completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: integer
+                  updated:
+                    type: integer
+                  deleted:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type: integer
+                        error:
+                          $ref: '#/components/schemas/Error'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - oauth2: ['schema:write']
+
+  /column-claims/search:
+    post:
+      summary: Search for column claims
+      description: |
+        Search for column claims based on provided criteria.
+        All search parameters are optional and combined with AND logic.
+      operationId: searchColumnClaims
+      tags:
+        - ColumnClaims
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  description: Filter by source
+                offset:
+                  type: integer
+                  description: Filter by exact offset
+                offset_range:
+                  type: object
+                  properties:
+                    min:
+                      type: integer
+                    max:
+                      type: integer
+                  description: Filter by offset range
+                column_type:
+                  $ref: '#/components/schemas/Cell'
+                  description: Filter by column type
+                name:
+                  type: string
+                  description: Filter by name (partial match)
+                labels:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Filter by labels (exact matches)
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ColumnClaim'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - oauth2: ['schema:read']
+
+security:
+  - oauth2: ['schema:read']
