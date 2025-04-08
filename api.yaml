@@ -138,12 +138,12 @@ components:
 paths:
   /enums:
     post:
-      summary: Create or update enums
+      summary: Create or update an enum
       description: |
-        Declarative endpoint to create or update enums.
+        Declarative endpoint to create or update an enum.
         - To create an enum, provide a complete Enum object
         - To update an enum, provide the name and fields to update
-      operationId: manageEnums
+      operationId: manageEnum
       tags:
         - Enums
       requestBody:
@@ -151,32 +151,20 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Enum'
+              $ref: '#/components/schemas/Enum'
       responses:
         '200':
-          description: Operation completed successfully
+          description: Enum updated successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  created:
-                    type: integer
-                  updated:
-                    type: integer
-                  deleted:
-                    type: integer
-                  errors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        index:
-                          type: integer
-                        error:
-                          $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Enum'
+        '201':
+          description: Enum created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enum'
         '400':
           description: Invalid request
           content:
@@ -254,6 +242,17 @@ paths:
                 value:
                   type: string
                   description: Filter by enum value (contains)
+                page:
+                  type: integer
+                  description: Page number for pagination
+                  default: 1
+                  minimum: 1
+                page_size:
+                  type: integer
+                  description: Number of results per page
+                  default: 20
+                  minimum: 1
+                  maximum: 100
       responses:
         '200':
           description: Search results
@@ -312,12 +311,12 @@ paths:
 
   /datfiles/{datfile}/column-claims:
     post:
-      summary: Create or update column claims
+      summary: Create or update a column claim
       description: |
-        Declarative endpoint to create or update column claims.
+        Declarative endpoint to create or update a column claim.
         - To create a claim, provide a complete ColumnClaim object
         - To update a claim, provide at least source, offset, and column_type (for identification) plus fields to update
-      operationId: manageColumnClaims
+      operationId: manageColumnClaim
       parameters:
         - name: datfile
           in: path
@@ -332,32 +331,20 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ColumnClaim'
+              $ref: '#/components/schemas/ColumnClaim'
       responses:
         '200':
-          description: Operation completed successfully
+          description: Column claim updated successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  created:
-                    type: integer
-                  updated:
-                    type: integer
-                  deleted:
-                    type: integer
-                  errors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        index:
-                          type: integer
-                        error:
-                          $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ColumnClaim'
+        '201':
+          description: Column claim created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnClaim'
         '400':
           description: Invalid request
           content:
@@ -473,6 +460,17 @@ paths:
                   additionalProperties:
                     type: string
                   description: Filter by labels (exact matches)
+                page:
+                  type: integer
+                  description: Page number for pagination
+                  default: 1
+                  minimum: 1
+                page_size:
+                  type: integer
+                  description: Number of results per page
+                  default: 20
+                  minimum: 1
+                  maximum: 100
       responses:
         '200':
           description: Search results
