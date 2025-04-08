@@ -1,12 +1,12 @@
 openapi: 3.0.0
 info:
-  title: Path of Exile Schema Management API
+  title: Path of Exile Community Schema Management API
   description: |
     A declarative management API for community schema definitions of Path of Exile tabular data files.
-    This API manages `ColumnClaims` which represent columns in binary database files.
+    This API manages `ColumnClaims` which represent columns in `.datc64` files.
   version: 1.0.0
   contact:
-    name: API Support
+    name: graham.forest@protonmail.com
     url: https://poe-schema.obsoleet.org/support
 servers:
   - url: https://poe-schema.obsoleet.org
@@ -41,7 +41,7 @@ components:
         - F32
         - I64
         - U64
-      
+
     Cell:
       type: object
       properties:
@@ -55,7 +55,7 @@ components:
       required:
         - type
         - scalar
-      
+
     ColumnClaim:
       type: object
       properties:
@@ -64,17 +64,18 @@ components:
           description: User-defined name of the column claim (optional)
         offset:
           type: integer
-          description: Byte offset in each row of the table
+          description: Byte offset of the start of the ColumnClaim in each row of the table
           minimum: 0
         bytes:
           type: integer
           description: Number of bytes the column claim occupies, starting at offset
           minimum: 1
+          maximum: 8
         labels:
           type: object
           additionalProperties:
             type: string
-          description: Arbitrary metadata about the claim
+          description: Arbitrary key/value metadata about the claim
         column_type:
           $ref: '#/components/schemas/Cell'
         source:
@@ -85,7 +86,7 @@ components:
         - bytes
         - column_type
         - source
-      
+
     Error:
       type: object
       properties:
