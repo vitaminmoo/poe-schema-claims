@@ -140,10 +140,9 @@ paths:
     post:
       summary: Create or update enums
       description: |
-        Declarative endpoint to create, update, or delete enums.
+        Declarative endpoint to create or update enums.
         - To create an enum, provide a complete Enum object
         - To update an enum, provide the name and fields to update
-        - To delete an enum, provide the name with a null value
       operationId: manageEnums
       tags:
         - Enums
@@ -154,17 +153,7 @@ paths:
             schema:
               type: array
               items:
-                oneOf:
-                  - $ref: '#/components/schemas/Enum'
-                  - type: object
-                    properties:
-                      name:
-                        type: string
-                      value:
-                        type: 'null'
-                    required:
-                      - name
-                      - value
+                $ref: '#/components/schemas/Enum'
       responses:
         '200':
           description: Operation completed successfully
@@ -190,6 +179,42 @@ paths:
                           $ref: '#/components/schemas/Error'
         '400':
           description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /enums/{name}:
+    delete:
+      summary: Delete an enum
+      description: Delete an enum by its name
+      operationId: deleteEnum
+      tags:
+        - Enums
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The name of the enum to delete
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Enum successfully deleted
+        '404':
+          description: Enum not found
           content:
             application/json:
               schema:
@@ -289,10 +314,9 @@ paths:
     post:
       summary: Create or update column claims
       description: |
-        Declarative endpoint to create, update, or delete column claims.
+        Declarative endpoint to create or update column claims.
         - To create a claim, provide a complete ColumnClaim object
         - To update a claim, provide at least source, offset, and column_type (for identification) plus fields to update
-        - To delete a claim, provide source, offset, and column_type with a null value
       operationId: manageColumnClaims
       parameters:
         - name: datfile
@@ -310,23 +334,7 @@ paths:
             schema:
               type: array
               items:
-                oneOf:
-                  - $ref: '#/components/schemas/ColumnClaim'
-                  - type: object
-                    properties:
-                      source:
-                        type: string
-                      offset:
-                        type: integer
-                      column_type:
-                        $ref: '#/components/schemas/Cell'
-                      value:
-                        type: 'null'
-                    required:
-                      - source
-                      - offset
-                      - column_type
-                      - value
+                $ref: '#/components/schemas/ColumnClaim'
       responses:
         '200':
           description: Operation completed successfully
@@ -352,6 +360,54 @@ paths:
                           $ref: '#/components/schemas/Error'
         '400':
           description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datfiles/{datfile}/column-claims/{source}/{offset}:
+    delete:
+      summary: Delete a column claim
+      description: Delete a column claim by its source and offset
+      operationId: deleteColumnClaim
+      tags:
+        - ColumnClaims
+      parameters:
+        - name: datfile
+          in: path
+          required: true
+          description: The datfile identifier (e.g., 'mods' for 'data/mods.datc64')
+          schema:
+            type: string
+        - name: source
+          in: path
+          required: true
+          description: The source of the column claim
+          schema:
+            type: string
+        - name: offset
+          in: path
+          required: true
+          description: The offset of the column claim
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Column claim successfully deleted
+        '404':
+          description: Column claim not found
           content:
             application/json:
               schema:
