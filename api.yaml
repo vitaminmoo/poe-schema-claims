@@ -9,7 +9,7 @@ info:
     name: graham.forest@protonmail.com
     url: https://poe-schema.obsoleet.org/support
 servers:
-  - url: https://poe-schema.obsoleet.org
+  - url: https://poe-schema.obsoleet.org/v1
     description: Production server
 
 components:
@@ -92,7 +92,7 @@ components:
           $ref: '#/components/schemas/Cell'
         source:
           type: string
-          description: Identity of the user or tool that created the column claim
+          description: Identity of the user or tool that created the column claim (read only)
         datfile:
           type: string
           description: The datfile this column claim references (e.g., 'mods' for 'data/mods.datc64')
@@ -100,7 +100,6 @@ components:
         - offset
         - bytes
         - column_type
-        - source
         - datfile
 
     Enum:
@@ -315,7 +314,7 @@ paths:
       description: |
         Declarative endpoint to create or update a column claim.
         - To create a claim, provide a complete ColumnClaim object
-        - To update a claim, provide at least source, offset, and column_type (for identification) plus fields to update
+        - To update a claim, provide at least offset and column_type (for identification) plus fields to update
       operationId: manageColumnClaim
       parameters:
         - name: datfile
@@ -364,10 +363,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /datfiles/{datfile}/column-claims/{source}/{offset}:
+  /datfiles/{datfile}/column-claims/{offset}:
     delete:
       summary: Delete a column claim
-      description: Delete a column claim by its source and offset
+      description: Delete a column claim by its offset
       operationId: deleteColumnClaim
       tags:
         - ColumnClaims
@@ -376,12 +375,6 @@ paths:
           in: path
           required: true
           description: The datfile identifier (e.g., 'mods' for 'data/mods.datc64')
-          schema:
-            type: string
-        - name: source
-          in: path
-          required: true
-          description: The source of the column claim
           schema:
             type: string
         - name: offset
