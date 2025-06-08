@@ -1,0 +1,576 @@
+{
+   "components": {
+      "responses": {
+         "Error": {
+            "content": {
+               "application/json": {
+                  "schema": {
+                     "$ref": "#/components/schemas/Error"
+                  }
+               }
+            },
+            "description": "Generic Error"
+         },
+         "NotFound": {
+            "content": {
+               "application/json": {
+                  "schema": {
+                     "$ref": "#/components/schemas/NotFound"
+                  }
+               }
+            },
+            "description": "Not Found Error - Used by endpoints that explicitly return a 404 error"
+         }
+      },
+      "schemas": {
+         "Cell": {
+            "properties": {
+               "is_array": {
+                  "description": "Whether the cell is an array",
+                  "type": "boolean"
+               },
+               "type": {
+                  "$ref": "#/components/schemas/Scalar"
+               }
+            },
+            "required": [
+               "type"
+            ],
+            "type": "object"
+         },
+         "ColumnClaim": {
+            "oneOf": [
+               {
+                  "properties": {
+                     "bytes": {
+                        "description": "Number of bytes used by the ColumnClaim, starting at the offset",
+                        "maximum": 8,
+                        "minimum": 1,
+                        "type": "integer"
+                     },
+                     "column_type": {
+                        "$ref": "#/components/schemas/Cell"
+                     },
+                     "datfile": {
+                        "description": "The datfile basename that this ColumnClaim references",
+                        "example": "mods",
+                        "type": "string"
+                     },
+                     "id": {
+                        "description": "Unique ID of the column claim",
+                        "readOnly": true,
+                        "type": "string"
+                     },
+                     "labels": {
+                        "additionalProperties": {
+                           "type": "string"
+                        },
+                        "description": "Arbitrary key/value metadata about the ColumnClaim",
+                        "type": "object"
+                     },
+                     "name": {
+                        "description": "User-defined name of the column claim (optional)",
+                        "type": "string"
+                     },
+                     "offset": {
+                        "description": "Byte offset of the start of the ColumnClaim in each row",
+                        "minimum": 0,
+                        "type": "integer"
+                     },
+                     "source": {
+                        "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                        "readOnly": true,
+                        "type": "string"
+                     }
+                  },
+                  "required": [
+                     "offset",
+                     "bytes",
+                     "column_type",
+                     "source",
+                     "datfile"
+                  ],
+                  "type": "object"
+               }
+            ]
+         },
+         "Enum": {
+            "oneOf": [
+               {
+                  "properties": {
+                     "id": {
+                        "description": "Unique ID of the enum",
+                        "readOnly": true,
+                        "type": "string"
+                     },
+                     "values": {
+                        "description": "Ordered list of enum values",
+                        "items": {
+                           "type": "string"
+                        },
+                        "type": "array"
+                     },
+                     "zero_indexed": {
+                        "default": true,
+                        "description": "Whether the enum is zero-indexed (true) or one-indexed",
+                        "type": "boolean"
+                     }
+                  },
+                  "required": [
+                     "id",
+                     "values",
+                     "zero_indexed"
+                  ],
+                  "type": "object"
+               }
+            ]
+         },
+         "Error": {
+            "description": "Generic Error Body",
+            "properties": {
+               "code": {
+                  "type": "integer"
+               },
+               "message": {
+                  "type": "string"
+               }
+            },
+            "required": [
+               "code",
+               "message"
+            ],
+            "type": "object"
+         },
+         "NotFound": {
+            "description": "Not Found Error Body",
+            "properties": {
+               "code": {
+                  "description": "Error code",
+                  "type": "integer"
+               },
+               "message": {
+                  "description": "Error message",
+                  "type": "string"
+               }
+            },
+            "required": [
+               "code",
+               "message"
+            ],
+            "type": "object"
+         },
+         "Scalar": {
+            "oneOf": [
+               {
+                  "enum": [
+                     "Unknown",
+                     "SelfRow",
+                     "Bool",
+                     "String",
+                     "I16",
+                     "U16",
+                     "I32",
+                     "U32",
+                     "F32",
+                     "I64",
+                     "U64"
+                  ],
+                  "type": "string"
+               },
+               {
+                  "properties": {
+                     "target": {
+                        "description": "The target datfile this foreign row points to",
+                        "type": "string"
+                     },
+                     "type": {
+                        "enum": [
+                           "ForeignRow"
+                        ],
+                        "type": "string"
+                     }
+                  },
+                  "required": [
+                     "type",
+                     "target"
+                  ],
+                  "type": "object"
+               },
+               {
+                  "properties": {
+                     "enum_name": {
+                        "description": "The name of the enum this row points to",
+                        "type": "string"
+                     },
+                     "type": {
+                        "enum": [
+                           "EnumRow"
+                        ],
+                        "type": "string"
+                     }
+                  },
+                  "required": [
+                     "type",
+                     "enum_name"
+                  ],
+                  "type": "object"
+               }
+            ]
+         }
+      }
+   },
+   "info": {
+      "contact": {
+         "email": "graham.forest@protonmail.com",
+         "name": "Graham Forest",
+         "url": "https://poe-schema.obsoleet.org/"
+      },
+      "description": "A declarative management API for community schema definition of Path of Exile tabular data files. This API manages `ColumnClaims`, which represent columns in `.datc64` files used in Path of Exile and Path of Exile 2",
+      "title": "POE Schema Claims API",
+      "version": "1.0.0"
+   },
+   "openapi": "3.0.0",
+   "paths": {
+      "/columnclaims": {
+         "get": {
+            "description": "List all ColumnClaim objects",
+            "responses": {
+               "200": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "items": {
+                              "$ref": "#/components/schemas/ColumnClaim"
+                           },
+                           "type": "array"
+                        }
+                     }
+                  },
+                  "description": "List of ColumnClaim objects"
+               },
+               "default": {
+                  "$ref": "#/components/responses/Error"
+               }
+            },
+            "summary": "List all ColumnClaim objects"
+         },
+         "put": {
+            "description": "Create a ColumnClaim object",
+            "requestBody": {
+               "content": {
+                  "application/json": {
+                     "schema": {
+                        "$ref": "#/components/schemas/ColumnClaim"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "201": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ColumnClaim"
+                        }
+                     }
+                  },
+                  "description": "Created",
+                  "headers": {
+                     "Location": {
+                        "description": "Location of the created ColumnClaim object.",
+                        "schema": {
+                           "type": "string"
+                        }
+                     }
+                  }
+               },
+               "default": {
+                  "$ref": "#/components/responses/Error"
+               }
+            },
+            "summary": "Create a ColumnClaim object"
+         }
+      },
+      "/columnclaims/{id}": {
+         "delete": {
+            "description": "Get a ColumnClaim object",
+            "parameters": [
+               {
+                  "description": "ID of the enum",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "204": {
+                  "description": "ColumnClaim Object Deletion Response"
+               },
+               "404": {
+                  "$ref": "#/components/responses/NotFound"
+               }
+            },
+            "summary": "Delete a ColumnClaim object"
+         },
+         "get": {
+            "description": "Get a ColumnClaim object",
+            "parameters": [
+               {
+                  "description": "ID of the enum",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ColumnClaim"
+                        }
+                     }
+                  },
+                  "description": "ColumnClaim Object Response"
+               },
+               "404": {
+                  "$ref": "#/components/responses/NotFound"
+               }
+            },
+            "summary": "Get a ColumnClaim object"
+         },
+         "put": {
+            "description": "Update a ColumnClaim object",
+            "parameters": [
+               {
+                  "description": "ID of the ColumnClaim object",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "requestBody": {
+               "content": {
+                  "application/json": {
+                     "schema": {
+                        "$ref": "#/components/schemas/ColumnClaim"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ColumnClaim"
+                        }
+                     }
+                  },
+                  "description": "Updated"
+               },
+               "304": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ColumnClaim"
+                        }
+                     }
+                  },
+                  "description": "Not Modified"
+               },
+               "default": {
+                  "$ref": "#/components/responses/Error"
+               }
+            },
+            "summary": "Update a ColumnClaim object"
+         }
+      },
+      "/enums": {
+         "get": {
+            "description": "List all Enum objects",
+            "responses": {
+               "200": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "items": {
+                              "$ref": "#/components/schemas/Enum"
+                           },
+                           "type": "array"
+                        }
+                     }
+                  },
+                  "description": "List of Enum objects"
+               },
+               "default": {
+                  "$ref": "#/components/responses/Error"
+               }
+            },
+            "summary": "List all Enum objects"
+         },
+         "put": {
+            "description": "Create a Enum object",
+            "requestBody": {
+               "content": {
+                  "application/json": {
+                     "schema": {
+                        "$ref": "#/components/schemas/Enum"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "201": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Enum"
+                        }
+                     }
+                  },
+                  "description": "Created",
+                  "headers": {
+                     "Location": {
+                        "description": "Location of the created Enum object.",
+                        "schema": {
+                           "type": "string"
+                        }
+                     }
+                  }
+               },
+               "default": {
+                  "$ref": "#/components/responses/Error"
+               }
+            },
+            "summary": "Create a Enum object"
+         }
+      },
+      "/enums/{id}": {
+         "delete": {
+            "description": "Get a Enum object",
+            "parameters": [
+               {
+                  "description": "ID of the enum",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "204": {
+                  "description": "Enum Object Deletion Response"
+               },
+               "404": {
+                  "$ref": "#/components/responses/NotFound"
+               }
+            },
+            "summary": "Delete a Enum object"
+         },
+         "get": {
+            "description": "Get a Enum object",
+            "parameters": [
+               {
+                  "description": "ID of the enum",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Enum"
+                        }
+                     }
+                  },
+                  "description": "Enum Object Response"
+               },
+               "404": {
+                  "$ref": "#/components/responses/NotFound"
+               }
+            },
+            "summary": "Get a Enum object"
+         },
+         "put": {
+            "description": "Update a Enum object",
+            "parameters": [
+               {
+                  "description": "ID of the Enum object",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "requestBody": {
+               "content": {
+                  "application/json": {
+                     "schema": {
+                        "$ref": "#/components/schemas/Enum"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Enum"
+                        }
+                     }
+                  },
+                  "description": "Updated"
+               },
+               "304": {
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Enum"
+                        }
+                     }
+                  },
+                  "description": "Not Modified"
+               },
+               "default": {
+                  "$ref": "#/components/responses/Error"
+               }
+            },
+            "summary": "Update a Enum object"
+         }
+      }
+   },
+   "servers": [
+      {
+         "url": "/v1/"
+      },
+      {
+         "description": "Production server",
+         "url": "https://poe-schema.obsoleet.org/v1"
+      }
+   ]
+}
