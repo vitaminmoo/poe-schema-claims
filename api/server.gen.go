@@ -47,26 +47,29 @@ const (
 // ColumnClaim defines model for ColumnClaim.
 type ColumnClaim struct {
 	// Bytes Number of bytes used by the ColumnClaim, starting at the offset
-	Bytes  int    `json:"bytes"`
-	Column Scalar `json:"column"`
+	Bytes int `json:"bytes"`
+
+	// ClientLabels Arbitrary key/value metadata about the ColumnClaim, set by the submitter
+	ClientLabels map[string]string `json:"client_labels"`
+	Column       Scalar            `json:"column"`
 
 	// Datfile The datfile basename that this ColumnClaim references
 	Datfile string `json:"datfile"`
 
-	// Id Unique ID of the column claim
+	// Id Unique ID of the ColumnClaim
 	Id *string `json:"id,omitempty"`
 
 	// IsArray Whether the ColumnClaim is an array
 	IsArray *bool `json:"is_array,omitempty"`
 
-	// Labels Arbitrary key/value metadata about the ColumnClaim
-	Labels map[string]string `json:"labels"`
-
-	// Name User-defined name of the column claim (optional)
-	Name string `json:"name"`
+	// Name User-defined name of the ColumnClaim
+	Name *string `json:"name,omitempty"`
 
 	// Offset Byte offset of the start of the ColumnClaim in each row
 	Offset int `json:"offset"`
+
+	// ServerLabels Arbitrary key/value metadata about the ColumnClaim, set by the system
+	ServerLabels *map[string]string `json:"server_labels,omitempty"`
 
 	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
 	Source *string `json:"source,omitempty"`
@@ -75,26 +78,29 @@ type ColumnClaim struct {
 // ColumnClaimUpdate defines model for ColumnClaimUpdate.
 type ColumnClaimUpdate struct {
 	// Bytes Number of bytes used by the ColumnClaim, starting at the offset
-	Bytes  *int    `json:"bytes,omitempty"`
-	Column *Scalar `json:"column,omitempty"`
+	Bytes *int `json:"bytes,omitempty"`
+
+	// ClientLabels Arbitrary key/value metadata about the ColumnClaim, set by the submitter
+	ClientLabels *map[string]string `json:"client_labels,omitempty"`
+	Column       *Scalar            `json:"column,omitempty"`
 
 	// Datfile The datfile basename that this ColumnClaim references
 	Datfile *string `json:"datfile,omitempty"`
 
-	// Id Unique ID of the column claim
+	// Id Unique ID of the ColumnClaim
 	Id *string `json:"id,omitempty"`
 
 	// IsArray Whether the ColumnClaim is an array
 	IsArray *bool `json:"is_array,omitempty"`
 
-	// Labels Arbitrary key/value metadata about the ColumnClaim
-	Labels *map[string]string `json:"labels,omitempty"`
-
-	// Name User-defined name of the column claim (optional)
+	// Name User-defined name of the ColumnClaim
 	Name *string `json:"name,omitempty"`
 
 	// Offset Byte offset of the start of the ColumnClaim in each row
 	Offset *int `json:"offset,omitempty"`
+
+	// ServerLabels Arbitrary key/value metadata about the ColumnClaim, set by the system
+	ServerLabels *map[string]string `json:"server_labels,omitempty"`
 
 	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
 	Source *string `json:"source,omitempty"`
@@ -102,16 +108,19 @@ type ColumnClaimUpdate struct {
 
 // Enum defines model for Enum.
 type Enum struct {
+	// ClientLabels Arbitrary key/value metadata about the Enum, set by the submitter
+	ClientLabels map[string]string `json:"client_labels"`
+
 	// Id Unique ID of the Enum
 	Id *string `json:"id,omitempty"`
 
-	// Labels Arbitrary key/value metadata about the Enum
-	Labels map[string]string `json:"labels"`
-
-	// Name User-defined name of the Enum (optional)
+	// Name User-defined name of the Enum
 	Name string `json:"name"`
 
-	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
+	// ServerLabels Arbitrary key/value metadata about the Enum, set by the system
+	ServerLabels *map[string]string `json:"server_labels,omitempty"`
+
+	// Source Identity of the user ro tool that created the Enum (read-only)
 	Source *string `json:"source,omitempty"`
 
 	// Values Ordered list of Enum values
@@ -123,16 +132,19 @@ type Enum struct {
 
 // EnumUpdate defines model for EnumUpdate.
 type EnumUpdate struct {
+	// ClientLabels Arbitrary key/value metadata about the Enum, set by the submitter
+	ClientLabels *map[string]string `json:"client_labels,omitempty"`
+
 	// Id Unique ID of the Enum
 	Id *string `json:"id,omitempty"`
 
-	// Labels Arbitrary key/value metadata about the Enum
-	Labels *map[string]string `json:"labels,omitempty"`
-
-	// Name User-defined name of the Enum (optional)
+	// Name User-defined name of the Enum
 	Name *string `json:"name,omitempty"`
 
-	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
+	// ServerLabels Arbitrary key/value metadata about the Enum, set by the system
+	ServerLabels *map[string]string `json:"server_labels,omitempty"`
+
+	// Source Identity of the user ro tool that created the Enum (read-only)
 	Source *string `json:"source,omitempty"`
 
 	// Values Ordered list of Enum values
@@ -180,11 +192,11 @@ type Scalar1 struct {
 // Scalar1Type defines model for Scalar.1.Type.
 type Scalar1Type string
 
-// PutColumnclaimsJSONRequestBody defines body for PutColumnclaims for application/json ContentType.
-type PutColumnclaimsJSONRequestBody = ColumnClaim
+// PutColumnClaimsJSONRequestBody defines body for PutColumnClaims for application/json ContentType.
+type PutColumnClaimsJSONRequestBody = ColumnClaim
 
-// PutColumnclaimsIdJSONRequestBody defines body for PutColumnclaimsId for application/json ContentType.
-type PutColumnclaimsIdJSONRequestBody = ColumnClaimUpdate
+// PutColumnClaimsIdJSONRequestBody defines body for PutColumnClaimsId for application/json ContentType.
+type PutColumnClaimsIdJSONRequestBody = ColumnClaimUpdate
 
 // PutEnumsJSONRequestBody defines body for PutEnums for application/json ContentType.
 type PutEnumsJSONRequestBody = Enum
@@ -257,20 +269,20 @@ func (t *Scalar) UnmarshalJSON(b []byte) error {
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// List all ColumnClaim objects
-	// (GET /columnclaims)
-	GetColumnclaims(w http.ResponseWriter, r *http.Request)
+	// (GET /column_claims)
+	GetColumnClaims(w http.ResponseWriter, r *http.Request)
 	// Create a ColumnClaim object
-	// (PUT /columnclaims)
-	PutColumnclaims(w http.ResponseWriter, r *http.Request)
+	// (PUT /column_claims)
+	PutColumnClaims(w http.ResponseWriter, r *http.Request)
 	// Delete a ColumnClaim object
-	// (DELETE /columnclaims/{id})
-	DeleteColumnclaimsId(w http.ResponseWriter, r *http.Request, id string)
+	// (DELETE /column_claims/{id})
+	DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request, id string)
 	// Get a ColumnClaim object
-	// (GET /columnclaims/{id})
-	GetColumnclaimsId(w http.ResponseWriter, r *http.Request, id string)
+	// (GET /column_claims/{id})
+	GetColumnClaimsId(w http.ResponseWriter, r *http.Request, id string)
 	// Update a ColumnClaim object
-	// (PUT /columnclaims/{id})
-	PutColumnclaimsId(w http.ResponseWriter, r *http.Request, id string)
+	// (PUT /column_claims/{id})
+	PutColumnClaimsId(w http.ResponseWriter, r *http.Request, id string)
 	// List all Enum objects
 	// (GET /enums)
 	GetEnums(w http.ResponseWriter, r *http.Request)
@@ -297,11 +309,11 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// GetColumnclaims operation middleware
-func (siw *ServerInterfaceWrapper) GetColumnclaims(w http.ResponseWriter, r *http.Request) {
+// GetColumnClaims operation middleware
+func (siw *ServerInterfaceWrapper) GetColumnClaims(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetColumnclaims(w, r)
+		siw.Handler.GetColumnClaims(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -311,11 +323,11 @@ func (siw *ServerInterfaceWrapper) GetColumnclaims(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r)
 }
 
-// PutColumnclaims operation middleware
-func (siw *ServerInterfaceWrapper) PutColumnclaims(w http.ResponseWriter, r *http.Request) {
+// PutColumnClaims operation middleware
+func (siw *ServerInterfaceWrapper) PutColumnClaims(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PutColumnclaims(w, r)
+		siw.Handler.PutColumnClaims(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -325,8 +337,8 @@ func (siw *ServerInterfaceWrapper) PutColumnclaims(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r)
 }
 
-// DeleteColumnclaimsId operation middleware
-func (siw *ServerInterfaceWrapper) DeleteColumnclaimsId(w http.ResponseWriter, r *http.Request) {
+// DeleteColumnClaimsId operation middleware
+func (siw *ServerInterfaceWrapper) DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -340,7 +352,7 @@ func (siw *ServerInterfaceWrapper) DeleteColumnclaimsId(w http.ResponseWriter, r
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteColumnclaimsId(w, r, id)
+		siw.Handler.DeleteColumnClaimsId(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -350,8 +362,8 @@ func (siw *ServerInterfaceWrapper) DeleteColumnclaimsId(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
-// GetColumnclaimsId operation middleware
-func (siw *ServerInterfaceWrapper) GetColumnclaimsId(w http.ResponseWriter, r *http.Request) {
+// GetColumnClaimsId operation middleware
+func (siw *ServerInterfaceWrapper) GetColumnClaimsId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -365,7 +377,7 @@ func (siw *ServerInterfaceWrapper) GetColumnclaimsId(w http.ResponseWriter, r *h
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetColumnclaimsId(w, r, id)
+		siw.Handler.GetColumnClaimsId(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -375,8 +387,8 @@ func (siw *ServerInterfaceWrapper) GetColumnclaimsId(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
-// PutColumnclaimsId operation middleware
-func (siw *ServerInterfaceWrapper) PutColumnclaimsId(w http.ResponseWriter, r *http.Request) {
+// PutColumnClaimsId operation middleware
+func (siw *ServerInterfaceWrapper) PutColumnClaimsId(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -390,7 +402,7 @@ func (siw *ServerInterfaceWrapper) PutColumnclaimsId(w http.ResponseWriter, r *h
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PutColumnclaimsId(w, r, id)
+		siw.Handler.PutColumnClaimsId(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -623,11 +635,11 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	m.HandleFunc("GET "+options.BaseURL+"/columnclaims", wrapper.GetColumnclaims)
-	m.HandleFunc("PUT "+options.BaseURL+"/columnclaims", wrapper.PutColumnclaims)
-	m.HandleFunc("DELETE "+options.BaseURL+"/columnclaims/{id}", wrapper.DeleteColumnclaimsId)
-	m.HandleFunc("GET "+options.BaseURL+"/columnclaims/{id}", wrapper.GetColumnclaimsId)
-	m.HandleFunc("PUT "+options.BaseURL+"/columnclaims/{id}", wrapper.PutColumnclaimsId)
+	m.HandleFunc("GET "+options.BaseURL+"/column_claims", wrapper.GetColumnClaims)
+	m.HandleFunc("PUT "+options.BaseURL+"/column_claims", wrapper.PutColumnClaims)
+	m.HandleFunc("DELETE "+options.BaseURL+"/column_claims/{id}", wrapper.DeleteColumnClaimsId)
+	m.HandleFunc("GET "+options.BaseURL+"/column_claims/{id}", wrapper.GetColumnClaimsId)
+	m.HandleFunc("PUT "+options.BaseURL+"/column_claims/{id}", wrapper.PutColumnClaimsId)
 	m.HandleFunc("GET "+options.BaseURL+"/enums", wrapper.GetEnums)
 	m.HandleFunc("PUT "+options.BaseURL+"/enums", wrapper.PutEnums)
 	m.HandleFunc("DELETE "+options.BaseURL+"/enums/{id}", wrapper.DeleteEnumsId)
@@ -641,52 +653,52 @@ type ErrorJSONResponse Error
 
 type NotFoundJSONResponse NotFound
 
-type GetColumnclaimsRequestObject struct {
+type GetColumnClaimsRequestObject struct {
 }
 
-type GetColumnclaimsResponseObject interface {
-	VisitGetColumnclaimsResponse(w http.ResponseWriter) error
+type GetColumnClaimsResponseObject interface {
+	VisitGetColumnClaimsResponse(w http.ResponseWriter) error
 }
 
-type GetColumnclaims200JSONResponse []ColumnClaim
+type GetColumnClaims200JSONResponse []ColumnClaim
 
-func (response GetColumnclaims200JSONResponse) VisitGetColumnclaimsResponse(w http.ResponseWriter) error {
+func (response GetColumnClaims200JSONResponse) VisitGetColumnClaimsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetColumnclaimsdefaultJSONResponse struct {
+type GetColumnClaimsdefaultJSONResponse struct {
 	Body       Error
 	StatusCode int
 }
 
-func (response GetColumnclaimsdefaultJSONResponse) VisitGetColumnclaimsResponse(w http.ResponseWriter) error {
+func (response GetColumnClaimsdefaultJSONResponse) VisitGetColumnClaimsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PutColumnclaimsRequestObject struct {
-	Body *PutColumnclaimsJSONRequestBody
+type PutColumnClaimsRequestObject struct {
+	Body *PutColumnClaimsJSONRequestBody
 }
 
-type PutColumnclaimsResponseObject interface {
-	VisitPutColumnclaimsResponse(w http.ResponseWriter) error
+type PutColumnClaimsResponseObject interface {
+	VisitPutColumnClaimsResponse(w http.ResponseWriter) error
 }
 
-type PutColumnclaims201ResponseHeaders struct {
+type PutColumnClaims201ResponseHeaders struct {
 	Location string
 }
 
-type PutColumnclaims201JSONResponse struct {
+type PutColumnClaims201JSONResponse struct {
 	Body    ColumnClaim
-	Headers PutColumnclaims201ResponseHeaders
+	Headers PutColumnClaims201ResponseHeaders
 }
 
-func (response PutColumnclaims201JSONResponse) VisitPutColumnclaimsResponse(w http.ResponseWriter) error {
+func (response PutColumnClaims201JSONResponse) VisitPutColumnClaimsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", fmt.Sprint(response.Headers.Location))
 	w.WriteHeader(201)
@@ -694,111 +706,111 @@ func (response PutColumnclaims201JSONResponse) VisitPutColumnclaimsResponse(w ht
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type PutColumnclaimsdefaultJSONResponse struct {
+type PutColumnClaimsdefaultJSONResponse struct {
 	Body       Error
 	StatusCode int
 }
 
-func (response PutColumnclaimsdefaultJSONResponse) VisitPutColumnclaimsResponse(w http.ResponseWriter) error {
+func (response PutColumnClaimsdefaultJSONResponse) VisitPutColumnClaimsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
 	return json.NewEncoder(w).Encode(response.Body)
 }
 
-type DeleteColumnclaimsIdRequestObject struct {
+type DeleteColumnClaimsIdRequestObject struct {
 	Id string `json:"id"`
 }
 
-type DeleteColumnclaimsIdResponseObject interface {
-	VisitDeleteColumnclaimsIdResponse(w http.ResponseWriter) error
+type DeleteColumnClaimsIdResponseObject interface {
+	VisitDeleteColumnClaimsIdResponse(w http.ResponseWriter) error
 }
 
-type DeleteColumnclaimsId204Response struct {
+type DeleteColumnClaimsId204Response struct {
 }
 
-func (response DeleteColumnclaimsId204Response) VisitDeleteColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response DeleteColumnClaimsId204Response) VisitDeleteColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteColumnclaimsId404JSONResponse struct{ NotFoundJSONResponse }
+type DeleteColumnClaimsId404JSONResponse struct{ NotFoundJSONResponse }
 
-func (response DeleteColumnclaimsId404JSONResponse) VisitDeleteColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response DeleteColumnClaimsId404JSONResponse) VisitDeleteColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetColumnclaimsIdRequestObject struct {
+type GetColumnClaimsIdRequestObject struct {
 	Id string `json:"id"`
 }
 
-type GetColumnclaimsIdResponseObject interface {
-	VisitGetColumnclaimsIdResponse(w http.ResponseWriter) error
+type GetColumnClaimsIdResponseObject interface {
+	VisitGetColumnClaimsIdResponse(w http.ResponseWriter) error
 }
 
-type GetColumnclaimsId200JSONResponse ColumnClaim
+type GetColumnClaimsId200JSONResponse ColumnClaim
 
-func (response GetColumnclaimsId200JSONResponse) VisitGetColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response GetColumnClaimsId200JSONResponse) VisitGetColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetColumnclaimsId404JSONResponse struct{ NotFoundJSONResponse }
+type GetColumnClaimsId404JSONResponse struct{ NotFoundJSONResponse }
 
-func (response GetColumnclaimsId404JSONResponse) VisitGetColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response GetColumnClaimsId404JSONResponse) VisitGetColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PutColumnclaimsIdRequestObject struct {
+type PutColumnClaimsIdRequestObject struct {
 	Id   string `json:"id"`
-	Body *PutColumnclaimsIdJSONRequestBody
+	Body *PutColumnClaimsIdJSONRequestBody
 }
 
-type PutColumnclaimsIdResponseObject interface {
-	VisitPutColumnclaimsIdResponse(w http.ResponseWriter) error
+type PutColumnClaimsIdResponseObject interface {
+	VisitPutColumnClaimsIdResponse(w http.ResponseWriter) error
 }
 
-type PutColumnclaimsId200JSONResponse ColumnClaim
+type PutColumnClaimsId200JSONResponse ColumnClaim
 
-func (response PutColumnclaimsId200JSONResponse) VisitPutColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response PutColumnClaimsId200JSONResponse) VisitPutColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PutColumnclaimsId304JSONResponse ColumnClaim
+type PutColumnClaimsId304JSONResponse ColumnClaim
 
-func (response PutColumnclaimsId304JSONResponse) VisitPutColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response PutColumnClaimsId304JSONResponse) VisitPutColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(304)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PutColumnclaimsId404JSONResponse struct{ NotFoundJSONResponse }
+type PutColumnClaimsId404JSONResponse struct{ NotFoundJSONResponse }
 
-func (response PutColumnclaimsId404JSONResponse) VisitPutColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response PutColumnClaimsId404JSONResponse) VisitPutColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PutColumnclaimsIddefaultJSONResponse struct {
+type PutColumnClaimsIddefaultJSONResponse struct {
 	Body       Error
 	StatusCode int
 }
 
-func (response PutColumnclaimsIddefaultJSONResponse) VisitPutColumnclaimsIdResponse(w http.ResponseWriter) error {
+func (response PutColumnClaimsIddefaultJSONResponse) VisitPutColumnClaimsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
@@ -972,20 +984,20 @@ func (response PutEnumsIddefaultJSONResponse) VisitPutEnumsIdResponse(w http.Res
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// List all ColumnClaim objects
-	// (GET /columnclaims)
-	GetColumnclaims(ctx context.Context, request GetColumnclaimsRequestObject) (GetColumnclaimsResponseObject, error)
+	// (GET /column_claims)
+	GetColumnClaims(ctx context.Context, request GetColumnClaimsRequestObject) (GetColumnClaimsResponseObject, error)
 	// Create a ColumnClaim object
-	// (PUT /columnclaims)
-	PutColumnclaims(ctx context.Context, request PutColumnclaimsRequestObject) (PutColumnclaimsResponseObject, error)
+	// (PUT /column_claims)
+	PutColumnClaims(ctx context.Context, request PutColumnClaimsRequestObject) (PutColumnClaimsResponseObject, error)
 	// Delete a ColumnClaim object
-	// (DELETE /columnclaims/{id})
-	DeleteColumnclaimsId(ctx context.Context, request DeleteColumnclaimsIdRequestObject) (DeleteColumnclaimsIdResponseObject, error)
+	// (DELETE /column_claims/{id})
+	DeleteColumnClaimsId(ctx context.Context, request DeleteColumnClaimsIdRequestObject) (DeleteColumnClaimsIdResponseObject, error)
 	// Get a ColumnClaim object
-	// (GET /columnclaims/{id})
-	GetColumnclaimsId(ctx context.Context, request GetColumnclaimsIdRequestObject) (GetColumnclaimsIdResponseObject, error)
+	// (GET /column_claims/{id})
+	GetColumnClaimsId(ctx context.Context, request GetColumnClaimsIdRequestObject) (GetColumnClaimsIdResponseObject, error)
 	// Update a ColumnClaim object
-	// (PUT /columnclaims/{id})
-	PutColumnclaimsId(ctx context.Context, request PutColumnclaimsIdRequestObject) (PutColumnclaimsIdResponseObject, error)
+	// (PUT /column_claims/{id})
+	PutColumnClaimsId(ctx context.Context, request PutColumnClaimsIdRequestObject) (PutColumnClaimsIdResponseObject, error)
 	// List all Enum objects
 	// (GET /enums)
 	GetEnums(ctx context.Context, request GetEnumsRequestObject) (GetEnumsResponseObject, error)
@@ -1032,23 +1044,23 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// GetColumnclaims operation middleware
-func (sh *strictHandler) GetColumnclaims(w http.ResponseWriter, r *http.Request) {
-	var request GetColumnclaimsRequestObject
+// GetColumnClaims operation middleware
+func (sh *strictHandler) GetColumnClaims(w http.ResponseWriter, r *http.Request) {
+	var request GetColumnClaimsRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetColumnclaims(ctx, request.(GetColumnclaimsRequestObject))
+		return sh.ssi.GetColumnClaims(ctx, request.(GetColumnClaimsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetColumnclaims")
+		handler = middleware(handler, "GetColumnClaims")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetColumnclaimsResponseObject); ok {
-		if err := validResponse.VisitGetColumnclaimsResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetColumnClaimsResponseObject); ok {
+		if err := validResponse.VisitGetColumnClaimsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1056,11 +1068,11 @@ func (sh *strictHandler) GetColumnclaims(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// PutColumnclaims operation middleware
-func (sh *strictHandler) PutColumnclaims(w http.ResponseWriter, r *http.Request) {
-	var request PutColumnclaimsRequestObject
+// PutColumnClaims operation middleware
+func (sh *strictHandler) PutColumnClaims(w http.ResponseWriter, r *http.Request) {
+	var request PutColumnClaimsRequestObject
 
-	var body PutColumnclaimsJSONRequestBody
+	var body PutColumnClaimsJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1068,18 +1080,18 @@ func (sh *strictHandler) PutColumnclaims(w http.ResponseWriter, r *http.Request)
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PutColumnclaims(ctx, request.(PutColumnclaimsRequestObject))
+		return sh.ssi.PutColumnClaims(ctx, request.(PutColumnClaimsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PutColumnclaims")
+		handler = middleware(handler, "PutColumnClaims")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PutColumnclaimsResponseObject); ok {
-		if err := validResponse.VisitPutColumnclaimsResponse(w); err != nil {
+	} else if validResponse, ok := response.(PutColumnClaimsResponseObject); ok {
+		if err := validResponse.VisitPutColumnClaimsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1087,25 +1099,25 @@ func (sh *strictHandler) PutColumnclaims(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// DeleteColumnclaimsId operation middleware
-func (sh *strictHandler) DeleteColumnclaimsId(w http.ResponseWriter, r *http.Request, id string) {
-	var request DeleteColumnclaimsIdRequestObject
+// DeleteColumnClaimsId operation middleware
+func (sh *strictHandler) DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request, id string) {
+	var request DeleteColumnClaimsIdRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteColumnclaimsId(ctx, request.(DeleteColumnclaimsIdRequestObject))
+		return sh.ssi.DeleteColumnClaimsId(ctx, request.(DeleteColumnClaimsIdRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteColumnclaimsId")
+		handler = middleware(handler, "DeleteColumnClaimsId")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(DeleteColumnclaimsIdResponseObject); ok {
-		if err := validResponse.VisitDeleteColumnclaimsIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(DeleteColumnClaimsIdResponseObject); ok {
+		if err := validResponse.VisitDeleteColumnClaimsIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1113,25 +1125,25 @@ func (sh *strictHandler) DeleteColumnclaimsId(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// GetColumnclaimsId operation middleware
-func (sh *strictHandler) GetColumnclaimsId(w http.ResponseWriter, r *http.Request, id string) {
-	var request GetColumnclaimsIdRequestObject
+// GetColumnClaimsId operation middleware
+func (sh *strictHandler) GetColumnClaimsId(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetColumnClaimsIdRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetColumnclaimsId(ctx, request.(GetColumnclaimsIdRequestObject))
+		return sh.ssi.GetColumnClaimsId(ctx, request.(GetColumnClaimsIdRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetColumnclaimsId")
+		handler = middleware(handler, "GetColumnClaimsId")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetColumnclaimsIdResponseObject); ok {
-		if err := validResponse.VisitGetColumnclaimsIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetColumnClaimsIdResponseObject); ok {
+		if err := validResponse.VisitGetColumnClaimsIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1139,13 +1151,13 @@ func (sh *strictHandler) GetColumnclaimsId(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// PutColumnclaimsId operation middleware
-func (sh *strictHandler) PutColumnclaimsId(w http.ResponseWriter, r *http.Request, id string) {
-	var request PutColumnclaimsIdRequestObject
+// PutColumnClaimsId operation middleware
+func (sh *strictHandler) PutColumnClaimsId(w http.ResponseWriter, r *http.Request, id string) {
+	var request PutColumnClaimsIdRequestObject
 
 	request.Id = id
 
-	var body PutColumnclaimsIdJSONRequestBody
+	var body PutColumnClaimsIdJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -1153,18 +1165,18 @@ func (sh *strictHandler) PutColumnclaimsId(w http.ResponseWriter, r *http.Reques
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PutColumnclaimsId(ctx, request.(PutColumnclaimsIdRequestObject))
+		return sh.ssi.PutColumnClaimsId(ctx, request.(PutColumnClaimsIdRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PutColumnclaimsId")
+		handler = middleware(handler, "PutColumnClaimsId")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PutColumnclaimsIdResponseObject); ok {
-		if err := validResponse.VisitPutColumnclaimsIdResponse(w); err != nil {
+	} else if validResponse, ok := response.(PutColumnClaimsIdResponseObject); ok {
+		if err := validResponse.VisitPutColumnClaimsIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -1315,35 +1327,35 @@ func (sh *strictHandler) PutEnumsId(w http.ResponseWriter, r *http.Request, id s
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"ACcAAA==",
+	"H4sIAAAAAAAC/+xZ3W7buBJ+FYLnXLSAYidtEBz46vQnKQx0myBtsBdBkNDiyGYrkSo5SuIN/O4LDmVb",
+	"lmTV2SRusMiNIUvi/Hwz83E4uuOxyXKjQaPjgztuweVGO6A/h9Ya6y9ioxE0+kuR56mKBSqj+9+d0f6e",
+	"iyeQCX/1XwsJH/D/9JdS++Gp6wdps9ks4hJcbFXuhfAB/wQarIpZ+ULEvxg8MoWWj6Z6IbBF+xeDjB4G",
+	"/WyHnTmQbDRloGVulEbHcCKQwa1XrzCdMgtYWM0E29/dZ1D6FZXGEHQfTFpk+kMqVOb/5tbkYFEFXEdT",
+	"DBc1S4psBJaZhNELrCjtwAmwiryIORQWlR4zgfTQJIkD5BHPxK3KiowP/hfxTOlwvRdxnObAB1xphDEQ",
+	"xHGqQONlKkaQkilCSuXtEOnJiq3lUodW6TEn9BJRpD4gDSjf2ZFCK+yU/YBp/1qkBbAMUEiBgomRKbDF",
+	"F8C5j64YZQoRLF9YbEbfIUYymBb9KtBfY5EKclAKTFQKTZS/TYCVD9lIONAigxBgnChXNY5ZSMCCjsHx",
+	"iMOtyHIvkGdGuqWJS2SUbGo70+pnAWz40Ye15jyPuAUhj3U65QO0BbTJdJfCWjENkkvkE5E6qIP/5wRw",
+	"ArauhCnHhGZByELByJgUhPYavP8tdjuwOxISpUEygqjV/oa9ZSo25L2f4jxP55Ioi1vEMqUZiHjCrLnh",
+	"lTzebctjB/Ya7DPL46lD6IjuMqmdKWzcgv5QgkaF0zk6hQPLrGFoTBpyNbYgEGQDu1de547R6fT1r9Nr",
+	"5t/4WSgLkg/Off4uTKozRB3pRaSjks0WFbosvYsWjyu2nuVSILyw4ws7vrDjCzs+S3ZsmHSoi5Z+7nfS",
+	"hbdoc57YqAjJyQ2q7561UYptiPmdSdpEb8vZ6Q24X1pGnLxp2SGPrQQLkqXKEXOQ7PLliCuErB3G8kYg",
+	"wVnE/wJrLpWWcAtyhVmDPeuJlRQqx7yAnVIAe+VXvWbGMqNhfreFax/UjFAqLpCpuXCxppDXNSAv5fxS",
+	"zi/l/PBybhbdfJ7UMf9h7430rVitJI2EirOVFicD58QYWpCoEQqJWL7fRgrVuVP3kKjTyNWlYUGpvdP+",
+	"tnXzx9HDvSu7/8EdNxqOEz44rxNfWHLHgbqcc36mf2hz4490XyFNTqnhfG9M6m8EMyI+3DvgET+j3+Hb",
+	"N/6afo/od3iw7+8c7FcsWuMBPW2xu2GksOO2HtqfXKr8hGKUgs9T7004vYRTEpsP9cxG55Y6KL4qAhRH",
+	"xoIa6/Dn1NycQrKhm9Hci6a/FzSiVDox8+mniMlbyIRK+YCPrZiIrJcYCw7/n1uDRvtHvdhk851wwD/R",
+	"W+yI3uIRL6xfO0HM3aDfzw3shENhz4ycSQGwZ+y4z5vEyyTEqbAC1TWwTGgxhgw0sncnQ5ZQYmdZoT1B",
+	"BoGM9goifB+JE4ETIq9bf6JEMSpSYRnRtj9juh775iPjpQXhjl1VOnZ3FbGbifLHHcgtOK85RNH5g9BV",
+	"TwqMD/avgrAwE1C6plVoWbvjUxMVUtxPjg/Z12B6UOmN8b0EWBcw2Ovt9nbp+JaDFrniA/6WbkU8Fzih",
+	"rOwHqy5jEuHvtCbpZ8/lIk1XTiUh9DRTycHSfHsoiRexCgXtJZXp/Jvd3XsNyBc7RteIoHqAbewlzeH5",
+	"53JvanNnZUdvVbpwZ/FtIOKuyDJhp7/CahbxvGgB+ANtxky0LGrge1I08f1ZgENi98f69rCC6Cob+K10",
+	"1ojq3tOpbsPKb94TEBIs6f9sgqqW3C2fzAl23vc0ke7xqGJhnQ9nD02Mrhj7N1drsX+n5Cx4kwJCW/uB",
+	"m+XLRxJQTZmhJA6wIgMk/M4b7eOiDYfQLyt/19PGkqvpqLOaFV34XTQyZr+lDiruHJM7jMz38TstV/si",
+	"2g+Lu4NQ+XxWjUPAY00conYC3BjsGvk9E6R3t1abzfg9VtjWhmAdp4Zz8j/i1PuErVX6IwXxSWm9nCNs",
+	"RO5bS6BglPRBfRuSZRta/TnpDyNVooLqe+bpAzeGrkSljcEzwwbNGR18O7qyQxKzjXaMhiz36MNWLH+0",
+	"BqwutbvzqrzdRg9L8B6/KANc222yljqfpLuqoLmttqoawGXZbNhHdUU/NAyUAM+3cyIHnrxlWsG4s1fq",
+	"AnTORf+67mhdUVWD87j9UC0g3Y3QJhR3n5isynu2PU/lo8mWm511+fBEXc46dc+kvVkl6MU3l5BjYdLX",
+	"v97r0/B01YETa2QRE6WFNRuPBq/3+Oxi9ncAAAD//ygummcvKgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

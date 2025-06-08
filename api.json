@@ -31,6 +31,14 @@
                   "minimum": 1,
                   "type": "integer"
                },
+               "client_labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the ColumnClaim, set by the submitter",
+                  "type": "object"
+               },
                "column": {
                   "$ref": "#/components/schemas/Scalar"
                },
@@ -40,7 +48,7 @@
                   "type": "string"
                },
                "id": {
-                  "description": "Unique ID of the column claim",
+                  "description": "Unique ID of the ColumnClaim",
                   "readOnly": true,
                   "type": "string"
                },
@@ -49,23 +57,23 @@
                   "description": "Whether the ColumnClaim is an array",
                   "type": "boolean"
                },
-               "labels": {
-                  "additionalProperties": {
-                     "type": "string"
-                  },
-                  "default": { },
-                  "description": "Arbitrary key/value metadata about the ColumnClaim",
-                  "type": "object"
-               },
                "name": {
-                  "default": "",
-                  "description": "User-defined name of the column claim (optional)",
+                  "description": "User-defined name of the ColumnClaim",
                   "type": "string"
                },
                "offset": {
                   "description": "Byte offset of the start of the ColumnClaim in each row",
                   "minimum": 0,
                   "type": "integer"
+               },
+               "server_labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the ColumnClaim, set by the system",
+                  "readOnly": true,
+                  "type": "object"
                },
                "source": {
                   "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
@@ -76,12 +84,12 @@
             "required": [
                "id",
                "source",
-               "name",
+               "client_labels",
+               "server_labels",
                "offset",
                "bytes",
                "column",
-               "datfile",
-               "labels"
+               "datfile"
             ],
             "type": "object"
          },
@@ -93,6 +101,14 @@
                   "minimum": 1,
                   "type": "integer"
                },
+               "client_labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the ColumnClaim, set by the submitter",
+                  "type": "object"
+               },
                "column": {
                   "$ref": "#/components/schemas/Scalar"
                },
@@ -102,7 +118,7 @@
                   "type": "string"
                },
                "id": {
-                  "description": "Unique ID of the column claim",
+                  "description": "Unique ID of the ColumnClaim",
                   "readOnly": true,
                   "type": "string"
                },
@@ -111,23 +127,23 @@
                   "description": "Whether the ColumnClaim is an array",
                   "type": "boolean"
                },
-               "labels": {
-                  "additionalProperties": {
-                     "type": "string"
-                  },
-                  "default": { },
-                  "description": "Arbitrary key/value metadata about the ColumnClaim",
-                  "type": "object"
-               },
                "name": {
-                  "default": "",
-                  "description": "User-defined name of the column claim (optional)",
+                  "description": "User-defined name of the ColumnClaim",
                   "type": "string"
                },
                "offset": {
                   "description": "Byte offset of the start of the ColumnClaim in each row",
                   "minimum": 0,
                   "type": "integer"
+               },
+               "server_labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the ColumnClaim, set by the system",
+                  "readOnly": true,
+                  "type": "object"
                },
                "source": {
                   "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
@@ -139,25 +155,34 @@
          },
          "Enum": {
             "properties": {
+               "client_labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the Enum, set by the submitter",
+                  "type": "object"
+               },
                "id": {
                   "description": "Unique ID of the Enum",
                   "readOnly": true,
                   "type": "string"
                },
-               "labels": {
+               "name": {
+                  "description": "User-defined name of the Enum",
+                  "type": "string"
+               },
+               "server_labels": {
                   "additionalProperties": {
                      "type": "string"
                   },
                   "default": { },
-                  "description": "Arbitrary key/value metadata about the Enum",
+                  "description": "Arbitrary key/value metadata about the Enum, set by the system",
+                  "readOnly": true,
                   "type": "object"
                },
-               "name": {
-                  "description": "User-defined name of the Enum (optional)",
-                  "type": "string"
-               },
                "source": {
-                  "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                  "description": "Identity of the user ro tool that created the Enum (read-only)",
                   "readOnly": true,
                   "type": "string"
                },
@@ -177,34 +202,44 @@
             "required": [
                "id",
                "source",
+               "client_labels",
+               "server_labels",
                "name",
                "values",
-               "zero_indexed",
-               "labels"
+               "zero_indexed"
             ],
             "type": "object"
          },
          "EnumUpdate": {
             "properties": {
+               "client_labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the Enum, set by the submitter",
+                  "type": "object"
+               },
                "id": {
                   "description": "Unique ID of the Enum",
                   "readOnly": true,
                   "type": "string"
                },
-               "labels": {
+               "name": {
+                  "description": "User-defined name of the Enum",
+                  "type": "string"
+               },
+               "server_labels": {
                   "additionalProperties": {
                      "type": "string"
                   },
                   "default": { },
-                  "description": "Arbitrary key/value metadata about the Enum",
+                  "description": "Arbitrary key/value metadata about the Enum, set by the system",
+                  "readOnly": true,
                   "type": "object"
                },
-               "name": {
-                  "description": "User-defined name of the Enum (optional)",
-                  "type": "string"
-               },
                "source": {
-                  "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                  "description": "Identity of the user ro tool that created the Enum (read-only)",
                   "readOnly": true,
                   "type": "string"
                },
@@ -321,7 +356,7 @@
    },
    "openapi": "3.0.0",
    "paths": {
-      "/columnclaims": {
+      "/column_claims": {
          "get": {
             "description": "List all ColumnClaim objects",
             "responses": {
@@ -382,7 +417,7 @@
             "summary": "Create a ColumnClaim object"
          }
       },
-      "/columnclaims/{id}": {
+      "/column_claims/{id}": {
          "delete": {
             "description": "Get a ColumnClaim object",
             "parameters": [
