@@ -82,7 +82,7 @@ local api = {
             content+: {
               'application/json'+: {
                 schema+: {
-                  '$ref': '#/components/schemas/' + name,
+                  '$ref': '#/components/schemas/' + name + 'Update',
                 },
               },
             },
@@ -107,6 +107,9 @@ local api = {
                   },
                 },
               },
+            },
+            '404'+: {
+              '$ref': '#/components/responses/NotFound',
             },
             default: {
               '$ref': '#/components/responses/Error',
@@ -171,6 +174,7 @@ local api = {
     components+: {
       schemas+: {
         [name]+: type,
+        [name + 'Update']: type { required:: [] },
       },
     },
   },
@@ -235,54 +239,30 @@ local api = {
           'message',
         ],
       },
-      Cell: {
-        type: 'object',
-        properties: {
-          type: {
-            '$ref': '#/components/schemas/Scalar',
-          },
-          is_array: {
-            type: 'boolean',
-            description: 'Whether the cell is an array',
-          },
-        },
-        required: ['type'],
-      },
       Scalar: {
         oneOf: [
-          {
-            type: 'string',
-            enum: [
-              'Unknown',
-              'SelfRow',
-              'Bool',
-              'String',
-              'I16',
-              'U16',
-              'I32',
-              'U32',
-              'F32',
-              'I64',
-              'U64',
-            ],
-          },
           {
             type: 'object',
             properties: {
               type: {
                 type: 'string',
                 enum: [
-                  'ForeignRow',
+                  'Unknown',
+                  'SelfRow',
+                  'Bool',
+                  'String',
+                  'I16',
+                  'U16',
+                  'I32',
+                  'U32',
+                  'F32',
+                  'I64',
+                  'U64',
                 ],
-              },
-              target: {
-                type: 'string',
-                description: 'The target datfile this foreign row points to',
               },
             },
             required: [
               'type',
-              'target',
             ],
           },
           {
@@ -292,16 +272,19 @@ local api = {
                 type: 'string',
                 enum: [
                   'EnumRow',
+                  'ForeignRow',
+                  'RowRef',
                 ],
               },
-              enum_name: {
+              target: {
                 type: 'string',
-                description: 'The name of the enum this row points to',
+                description: 'The name of the table or enum this column points to',
+                example: 'mods',
               },
             },
             required: [
               'type',
-              'enum_name',
+              'target',
             ],
           },
         ],
@@ -332,79 +315,95 @@ local api = {
   },
 }
 + api.Object('Enum', {
-  oneOf: [
-    {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          readOnly: true,
-          description: 'Unique ID of the enum',
-        },
-        values: {
-          type: 'array',
-          description: 'Ordered list of enum values',
-          items: {
-            type: 'string',
-          },
-        },
-        zero_indexed: {
-          type: 'boolean',
-          description: 'Whether the enum is zero-indexed (true) or one-indexed',
-          default: true,
-        },
-      },
-      required: ['id', 'values', 'zero_indexed'],
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      readOnly: true,
+      description: 'Unique ID of the Enum',
     },
-  ],
+    source: {
+      type: 'string',
+      description: 'Identity of the user ro tool that created the ColumnClaim (read-only)',
+      readOnly: true,
+    },
+    name: {
+      type: 'string',
+      description: 'User-defined name of the Enum (optional)',
+    },
+    values: {
+      type: 'array',
+      description: 'Ordered list of Enum values',
+      items: {
+        type: 'string',
+      },
+    },
+    zero_indexed: {
+      type: 'boolean',
+      description: 'Whether the Enum is zero-indexed (true) or one-indexed',
+      default: true,
+    },
+    labels: {
+      type: 'object',
+      description: 'Arbitrary key/value metadata about the Enum',
+      additionalProperties: {
+        type: 'string',
+      },
+      default: {},
+    },
+  },
+  required: ['id', 'source', 'name', 'values', 'zero_indexed', 'labels'],
 })
 + api.Object('ColumnClaim', {
-  oneOf: [
-    {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          readOnly: true,
-          description: 'Unique ID of the column claim',
-        },
-        name: {
-          type: 'string',
-          description: 'User-defined name of the column claim (optional)',
-        },
-        offset: {
-          type: 'integer',
-          description: 'Byte offset of the start of the ColumnClaim in each row',
-          minimum: 0,
-        },
-        bytes: {
-          type: 'integer',
-          description: 'Number of bytes used by the ColumnClaim, starting at the offset',
-          minimum: 1,
-          maximum: 8,
-        },
-        labels: {
-          type: 'object',
-          description: 'Arbitrary key/value metadata about the ColumnClaim',
-          additionalProperties: {
-            type: 'string',
-          },
-        },
-        column_type: {
-          '$ref': '#/components/schemas/Cell',
-        },
-        source: {
-          type: 'string',
-          description: 'Identity of the user ro tool that created the ColumnClaim (read-only)',
-          readOnly: true,
-        },
-        datfile: {
-          type: 'string',
-          description: 'The datfile basename that this ColumnClaim references',
-          example: 'mods',
-        },
-      },
-      required: ['offset', 'bytes', 'column_type', 'source', 'datfile'],
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      readOnly: true,
+      description: 'Unique ID of the column claim',
     },
-  ],
+    source: {
+      type: 'string',
+      description: 'Identity of the user ro tool that created the ColumnClaim (read-only)',
+      readOnly: true,
+    },
+    name: {
+      type: 'string',
+      description: 'User-defined name of the column claim (optional)',
+      default: '',
+    },
+    offset: {
+      type: 'integer',
+      description: 'Byte offset of the start of the ColumnClaim in each row',
+      minimum: 0,
+    },
+    bytes: {
+      type: 'integer',
+      description: 'Number of bytes used by the ColumnClaim, starting at the offset',
+      minimum: 1,
+      maximum: 8,
+    },
+    is_array: {
+      type: 'boolean',
+      description: 'Whether the ColumnClaim is an array',
+      default: false,
+    },
+    column: {
+      '$ref': '#/components/schemas/Scalar',
+    },
+    datfile: {
+      type: 'string',
+      description: 'The datfile basename that this ColumnClaim references',
+      example: 'mods',
+    },
+    labels: {
+      type: 'object',
+      description: 'Arbitrary key/value metadata about the ColumnClaim',
+      additionalProperties: {
+        type: 'string',
+      },
+      default: {},
+    },
+  },
+  required: ['id', 'source', 'name', 'offset', 'bytes', 'column', 'datfile', 'labels'],
 })

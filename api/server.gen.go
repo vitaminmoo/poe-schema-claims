@@ -22,48 +22,33 @@ import (
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
-// Defines values for Scalar0.
+// Defines values for Scalar0Type.
 const (
-	Bool    Scalar0 = "Bool"
-	F32     Scalar0 = "F32"
-	I16     Scalar0 = "I16"
-	I32     Scalar0 = "I32"
-	I64     Scalar0 = "I64"
-	SelfRow Scalar0 = "SelfRow"
-	String  Scalar0 = "String"
-	U16     Scalar0 = "U16"
-	U32     Scalar0 = "U32"
-	U64     Scalar0 = "U64"
-	Unknown Scalar0 = "Unknown"
+	Bool    Scalar0Type = "Bool"
+	F32     Scalar0Type = "F32"
+	I16     Scalar0Type = "I16"
+	I32     Scalar0Type = "I32"
+	I64     Scalar0Type = "I64"
+	SelfRow Scalar0Type = "SelfRow"
+	String  Scalar0Type = "String"
+	U16     Scalar0Type = "U16"
+	U32     Scalar0Type = "U32"
+	U64     Scalar0Type = "U64"
+	Unknown Scalar0Type = "Unknown"
 )
 
 // Defines values for Scalar1Type.
 const (
+	EnumRow    Scalar1Type = "EnumRow"
 	ForeignRow Scalar1Type = "ForeignRow"
+	RowRef     Scalar1Type = "RowRef"
 )
-
-// Defines values for Scalar2Type.
-const (
-	EnumRow Scalar2Type = "EnumRow"
-)
-
-// Cell defines model for Cell.
-type Cell struct {
-	// IsArray Whether the cell is an array
-	IsArray *bool  `json:"is_array,omitempty"`
-	Type    Scalar `json:"type"`
-}
 
 // ColumnClaim defines model for ColumnClaim.
 type ColumnClaim struct {
-	union json.RawMessage
-}
-
-// ColumnClaim0 defines model for .
-type ColumnClaim0 struct {
 	// Bytes Number of bytes used by the ColumnClaim, starting at the offset
-	Bytes      int  `json:"bytes"`
-	ColumnType Cell `json:"column_type"`
+	Bytes  int    `json:"bytes"`
+	Column Scalar `json:"column"`
 
 	// Datfile The datfile basename that this ColumnClaim references
 	Datfile string `json:"datfile"`
@@ -71,11 +56,14 @@ type ColumnClaim0 struct {
 	// Id Unique ID of the column claim
 	Id *string `json:"id,omitempty"`
 
+	// IsArray Whether the ColumnClaim is an array
+	IsArray *bool `json:"is_array,omitempty"`
+
 	// Labels Arbitrary key/value metadata about the ColumnClaim
-	Labels *map[string]string `json:"labels,omitempty"`
+	Labels map[string]string `json:"labels"`
 
 	// Name User-defined name of the column claim (optional)
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// Offset Byte offset of the start of the ColumnClaim in each row
 	Offset int `json:"offset"`
@@ -84,21 +72,74 @@ type ColumnClaim0 struct {
 	Source *string `json:"source,omitempty"`
 }
 
-// Enum defines model for Enum.
-type Enum struct {
-	union json.RawMessage
-}
+// ColumnClaimUpdate defines model for ColumnClaimUpdate.
+type ColumnClaimUpdate struct {
+	// Bytes Number of bytes used by the ColumnClaim, starting at the offset
+	Bytes  *int    `json:"bytes,omitempty"`
+	Column *Scalar `json:"column,omitempty"`
 
-// Enum0 defines model for .
-type Enum0 struct {
-	// Id Unique ID of the enum
+	// Datfile The datfile basename that this ColumnClaim references
+	Datfile *string `json:"datfile,omitempty"`
+
+	// Id Unique ID of the column claim
 	Id *string `json:"id,omitempty"`
 
-	// Values Ordered list of enum values
+	// IsArray Whether the ColumnClaim is an array
+	IsArray *bool `json:"is_array,omitempty"`
+
+	// Labels Arbitrary key/value metadata about the ColumnClaim
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Name User-defined name of the column claim (optional)
+	Name *string `json:"name,omitempty"`
+
+	// Offset Byte offset of the start of the ColumnClaim in each row
+	Offset *int `json:"offset,omitempty"`
+
+	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
+	Source *string `json:"source,omitempty"`
+}
+
+// Enum defines model for Enum.
+type Enum struct {
+	// Id Unique ID of the Enum
+	Id *string `json:"id,omitempty"`
+
+	// Labels Arbitrary key/value metadata about the Enum
+	Labels map[string]string `json:"labels"`
+
+	// Name User-defined name of the Enum (optional)
+	Name string `json:"name"`
+
+	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
+	Source *string `json:"source,omitempty"`
+
+	// Values Ordered list of Enum values
 	Values []string `json:"values"`
 
-	// ZeroIndexed Whether the enum is zero-indexed (true) or one-indexed
+	// ZeroIndexed Whether the Enum is zero-indexed (true) or one-indexed
 	ZeroIndexed bool `json:"zero_indexed"`
+}
+
+// EnumUpdate defines model for EnumUpdate.
+type EnumUpdate struct {
+	// Id Unique ID of the Enum
+	Id *string `json:"id,omitempty"`
+
+	// Labels Arbitrary key/value metadata about the Enum
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Name User-defined name of the Enum (optional)
+	Name *string `json:"name,omitempty"`
+
+	// Source Identity of the user ro tool that created the ColumnClaim (read-only)
+	Source *string `json:"source,omitempty"`
+
+	// Values Ordered list of Enum values
+	Values *[]string `json:"values,omitempty"`
+
+	// ZeroIndexed Whether the Enum is zero-indexed (true) or one-indexed
+	ZeroIndexed *bool `json:"zero_indexed,omitempty"`
 }
 
 // Error Generic Error Body
@@ -121,12 +162,17 @@ type Scalar struct {
 	union json.RawMessage
 }
 
-// Scalar0 defines model for Scalar.0.
-type Scalar0 string
+// Scalar0 defines model for .
+type Scalar0 struct {
+	Type Scalar0Type `json:"type"`
+}
+
+// Scalar0Type defines model for Scalar.0.Type.
+type Scalar0Type string
 
 // Scalar1 defines model for .
 type Scalar1 struct {
-	// Target The target datfile this foreign row points to
+	// Target The name of the table or enum this column points to
 	Target string      `json:"target"`
 	Type   Scalar1Type `json:"type"`
 }
@@ -134,99 +180,17 @@ type Scalar1 struct {
 // Scalar1Type defines model for Scalar.1.Type.
 type Scalar1Type string
 
-// Scalar2 defines model for .
-type Scalar2 struct {
-	// EnumName The name of the enum this row points to
-	EnumName string      `json:"enum_name"`
-	Type     Scalar2Type `json:"type"`
-}
-
-// Scalar2Type defines model for Scalar.2.Type.
-type Scalar2Type string
-
 // PutColumnclaimsJSONRequestBody defines body for PutColumnclaims for application/json ContentType.
 type PutColumnclaimsJSONRequestBody = ColumnClaim
 
 // PutColumnclaimsIdJSONRequestBody defines body for PutColumnclaimsId for application/json ContentType.
-type PutColumnclaimsIdJSONRequestBody = ColumnClaim
+type PutColumnclaimsIdJSONRequestBody = ColumnClaimUpdate
 
 // PutEnumsJSONRequestBody defines body for PutEnums for application/json ContentType.
 type PutEnumsJSONRequestBody = Enum
 
 // PutEnumsIdJSONRequestBody defines body for PutEnumsId for application/json ContentType.
-type PutEnumsIdJSONRequestBody = Enum
-
-// AsColumnClaim0 returns the union data inside the ColumnClaim as a ColumnClaim0
-func (t ColumnClaim) AsColumnClaim0() (ColumnClaim0, error) {
-	var body ColumnClaim0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromColumnClaim0 overwrites any union data inside the ColumnClaim as the provided ColumnClaim0
-func (t *ColumnClaim) FromColumnClaim0(v ColumnClaim0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeColumnClaim0 performs a merge with any union data inside the ColumnClaim, using the provided ColumnClaim0
-func (t *ColumnClaim) MergeColumnClaim0(v ColumnClaim0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ColumnClaim) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ColumnClaim) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsEnum0 returns the union data inside the Enum as a Enum0
-func (t Enum) AsEnum0() (Enum0, error) {
-	var body Enum0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromEnum0 overwrites any union data inside the Enum as the provided Enum0
-func (t *Enum) FromEnum0(v Enum0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeEnum0 performs a merge with any union data inside the Enum, using the provided Enum0
-func (t *Enum) MergeEnum0(v Enum0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Enum) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *Enum) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
+type PutEnumsIdJSONRequestBody = EnumUpdate
 
 // AsScalar0 returns the union data inside the Scalar as a Scalar0
 func (t Scalar) AsScalar0() (Scalar0, error) {
@@ -270,32 +234,6 @@ func (t *Scalar) FromScalar1(v Scalar1) error {
 
 // MergeScalar1 performs a merge with any union data inside the Scalar, using the provided Scalar1
 func (t *Scalar) MergeScalar1(v Scalar1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsScalar2 returns the union data inside the Scalar as a Scalar2
-func (t Scalar) AsScalar2() (Scalar2, error) {
-	var body Scalar2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromScalar2 overwrites any union data inside the Scalar as the provided Scalar2
-func (t *Scalar) FromScalar2(v Scalar2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeScalar2 performs a merge with any union data inside the Scalar, using the provided Scalar2
-func (t *Scalar) MergeScalar2(v Scalar2) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -846,6 +784,15 @@ func (response PutColumnclaimsId304JSONResponse) VisitPutColumnclaimsIdResponse(
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PutColumnclaimsId404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response PutColumnclaimsId404JSONResponse) VisitPutColumnclaimsIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type PutColumnclaimsIddefaultJSONResponse struct {
 	Body       Error
 	StatusCode int
@@ -997,6 +944,15 @@ type PutEnumsId304JSONResponse Enum
 func (response PutEnumsId304JSONResponse) VisitPutEnumsIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(304)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutEnumsId404JSONResponse struct{ NotFoundJSONResponse }
+
+func (response PutEnumsId404JSONResponse) VisitPutEnumsIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -1359,34 +1315,35 @@ func (sh *strictHandler) PutEnumsId(w http.ResponseWriter, r *http.Request, id s
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"DS0bMgkfAAA=",
+	"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",
+	"ACcAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

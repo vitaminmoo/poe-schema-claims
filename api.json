@@ -23,107 +23,205 @@
          }
       },
       "schemas": {
-         "Cell": {
+         "ColumnClaim": {
             "properties": {
+               "bytes": {
+                  "description": "Number of bytes used by the ColumnClaim, starting at the offset",
+                  "maximum": 8,
+                  "minimum": 1,
+                  "type": "integer"
+               },
+               "column": {
+                  "$ref": "#/components/schemas/Scalar"
+               },
+               "datfile": {
+                  "description": "The datfile basename that this ColumnClaim references",
+                  "example": "mods",
+                  "type": "string"
+               },
+               "id": {
+                  "description": "Unique ID of the column claim",
+                  "readOnly": true,
+                  "type": "string"
+               },
                "is_array": {
-                  "description": "Whether the cell is an array",
+                  "default": false,
+                  "description": "Whether the ColumnClaim is an array",
                   "type": "boolean"
                },
-               "type": {
-                  "$ref": "#/components/schemas/Scalar"
+               "labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the ColumnClaim",
+                  "type": "object"
+               },
+               "name": {
+                  "default": "",
+                  "description": "User-defined name of the column claim (optional)",
+                  "type": "string"
+               },
+               "offset": {
+                  "description": "Byte offset of the start of the ColumnClaim in each row",
+                  "minimum": 0,
+                  "type": "integer"
+               },
+               "source": {
+                  "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                  "readOnly": true,
+                  "type": "string"
                }
             },
             "required": [
-               "type"
+               "id",
+               "source",
+               "name",
+               "offset",
+               "bytes",
+               "column",
+               "datfile",
+               "labels"
             ],
             "type": "object"
          },
-         "ColumnClaim": {
-            "oneOf": [
-               {
-                  "properties": {
-                     "bytes": {
-                        "description": "Number of bytes used by the ColumnClaim, starting at the offset",
-                        "maximum": 8,
-                        "minimum": 1,
-                        "type": "integer"
-                     },
-                     "column_type": {
-                        "$ref": "#/components/schemas/Cell"
-                     },
-                     "datfile": {
-                        "description": "The datfile basename that this ColumnClaim references",
-                        "example": "mods",
-                        "type": "string"
-                     },
-                     "id": {
-                        "description": "Unique ID of the column claim",
-                        "readOnly": true,
-                        "type": "string"
-                     },
-                     "labels": {
-                        "additionalProperties": {
-                           "type": "string"
-                        },
-                        "description": "Arbitrary key/value metadata about the ColumnClaim",
-                        "type": "object"
-                     },
-                     "name": {
-                        "description": "User-defined name of the column claim (optional)",
-                        "type": "string"
-                     },
-                     "offset": {
-                        "description": "Byte offset of the start of the ColumnClaim in each row",
-                        "minimum": 0,
-                        "type": "integer"
-                     },
-                     "source": {
-                        "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
-                        "readOnly": true,
-                        "type": "string"
-                     }
+         "ColumnClaimUpdate": {
+            "properties": {
+               "bytes": {
+                  "description": "Number of bytes used by the ColumnClaim, starting at the offset",
+                  "maximum": 8,
+                  "minimum": 1,
+                  "type": "integer"
+               },
+               "column": {
+                  "$ref": "#/components/schemas/Scalar"
+               },
+               "datfile": {
+                  "description": "The datfile basename that this ColumnClaim references",
+                  "example": "mods",
+                  "type": "string"
+               },
+               "id": {
+                  "description": "Unique ID of the column claim",
+                  "readOnly": true,
+                  "type": "string"
+               },
+               "is_array": {
+                  "default": false,
+                  "description": "Whether the ColumnClaim is an array",
+                  "type": "boolean"
+               },
+               "labels": {
+                  "additionalProperties": {
+                     "type": "string"
                   },
-                  "required": [
-                     "offset",
-                     "bytes",
-                     "column_type",
-                     "source",
-                     "datfile"
-                  ],
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the ColumnClaim",
                   "type": "object"
+               },
+               "name": {
+                  "default": "",
+                  "description": "User-defined name of the column claim (optional)",
+                  "type": "string"
+               },
+               "offset": {
+                  "description": "Byte offset of the start of the ColumnClaim in each row",
+                  "minimum": 0,
+                  "type": "integer"
+               },
+               "source": {
+                  "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                  "readOnly": true,
+                  "type": "string"
                }
-            ]
+            },
+            "type": "object"
          },
          "Enum": {
-            "oneOf": [
-               {
-                  "properties": {
-                     "id": {
-                        "description": "Unique ID of the enum",
-                        "readOnly": true,
-                        "type": "string"
-                     },
-                     "values": {
-                        "description": "Ordered list of enum values",
-                        "items": {
-                           "type": "string"
-                        },
-                        "type": "array"
-                     },
-                     "zero_indexed": {
-                        "default": true,
-                        "description": "Whether the enum is zero-indexed (true) or one-indexed",
-                        "type": "boolean"
-                     }
+            "properties": {
+               "id": {
+                  "description": "Unique ID of the Enum",
+                  "readOnly": true,
+                  "type": "string"
+               },
+               "labels": {
+                  "additionalProperties": {
+                     "type": "string"
                   },
-                  "required": [
-                     "id",
-                     "values",
-                     "zero_indexed"
-                  ],
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the Enum",
                   "type": "object"
+               },
+               "name": {
+                  "description": "User-defined name of the Enum (optional)",
+                  "type": "string"
+               },
+               "source": {
+                  "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                  "readOnly": true,
+                  "type": "string"
+               },
+               "values": {
+                  "description": "Ordered list of Enum values",
+                  "items": {
+                     "type": "string"
+                  },
+                  "type": "array"
+               },
+               "zero_indexed": {
+                  "default": true,
+                  "description": "Whether the Enum is zero-indexed (true) or one-indexed",
+                  "type": "boolean"
                }
-            ]
+            },
+            "required": [
+               "id",
+               "source",
+               "name",
+               "values",
+               "zero_indexed",
+               "labels"
+            ],
+            "type": "object"
+         },
+         "EnumUpdate": {
+            "properties": {
+               "id": {
+                  "description": "Unique ID of the Enum",
+                  "readOnly": true,
+                  "type": "string"
+               },
+               "labels": {
+                  "additionalProperties": {
+                     "type": "string"
+                  },
+                  "default": { },
+                  "description": "Arbitrary key/value metadata about the Enum",
+                  "type": "object"
+               },
+               "name": {
+                  "description": "User-defined name of the Enum (optional)",
+                  "type": "string"
+               },
+               "source": {
+                  "description": "Identity of the user ro tool that created the ColumnClaim (read-only)",
+                  "readOnly": true,
+                  "type": "string"
+               },
+               "values": {
+                  "description": "Ordered list of Enum values",
+                  "items": {
+                     "type": "string"
+                  },
+                  "type": "array"
+               },
+               "zero_indexed": {
+                  "default": true,
+                  "description": "Whether the Enum is zero-indexed (true) or one-indexed",
+                  "type": "boolean"
+               }
+            },
+            "type": "object"
          },
          "Error": {
             "description": "Generic Error Body",
@@ -162,30 +260,41 @@
          "Scalar": {
             "oneOf": [
                {
-                  "enum": [
-                     "Unknown",
-                     "SelfRow",
-                     "Bool",
-                     "String",
-                     "I16",
-                     "U16",
-                     "I32",
-                     "U32",
-                     "F32",
-                     "I64",
-                     "U64"
+                  "properties": {
+                     "type": {
+                        "enum": [
+                           "Unknown",
+                           "SelfRow",
+                           "Bool",
+                           "String",
+                           "I16",
+                           "U16",
+                           "I32",
+                           "U32",
+                           "F32",
+                           "I64",
+                           "U64"
+                        ],
+                        "type": "string"
+                     }
+                  },
+                  "required": [
+                     "type"
                   ],
-                  "type": "string"
+                  "type": "object"
                },
                {
                   "properties": {
                      "target": {
-                        "description": "The target datfile this foreign row points to",
+                        "description": "The name of the table or enum this column points to",
+                        "example": "mods",
                         "type": "string"
                      },
                      "type": {
                         "enum": [
-                           "ForeignRow"
+                           "EnumRow",
+                           "ForeignRow",
+                           "RowRef"
                         ],
                         "type": "string"
                      }
@@ -193,25 +302,6 @@
                   "required": [
                      "type",
                      "target"
-                  ],
-                  "type": "object"
-               },
-               {
-                  "properties": {
-                     "enum_name": {
-                        "description": "The name of the enum this row points to",
-                        "type": "string"
-                     },
-                     "type": {
-                        "enum": [
-                           "EnumRow"
-                        ],
-                        "type": "string"
-                     }
-                  },
-                  "required": [
-                     "type",
-                     "enum_name"
                   ],
                   "type": "object"
                }
@@ -363,7 +453,7 @@
                "content": {
                   "application/json": {
                      "schema": {
-                        "$ref": "#/components/schemas/ColumnClaim"
+                        "$ref": "#/components/schemas/ColumnClaimUpdate"
                      }
                   }
                },
@@ -389,6 +479,9 @@
                      }
                   },
                   "description": "Not Modified"
+               },
+               "404": {
+                  "$ref": "#/components/responses/NotFound"
                },
                "default": {
                   "$ref": "#/components/responses/Error"
@@ -529,7 +622,7 @@
                "content": {
                   "application/json": {
                      "schema": {
-                        "$ref": "#/components/schemas/Enum"
+                        "$ref": "#/components/schemas/EnumUpdate"
                      }
                   }
                },
@@ -555,6 +648,9 @@
                      }
                   },
                   "description": "Not Modified"
+               },
+               "404": {
+                  "$ref": "#/components/responses/NotFound"
                },
                "default": {
                   "$ref": "#/components/responses/Error"
