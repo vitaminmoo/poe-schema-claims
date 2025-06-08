@@ -104,9 +104,7 @@ func startHttpServer(ctx context.Context, g *errgroup.Group) error {
 			Middlewares: []api.MiddlewareFunc{
 				nethttpmiddleware.OapiRequestValidatorWithOptions(spec,
 					&nethttpmiddleware.Options{
-						Options: openapi3filter.Options{
-							MultiError: false,
-						},
+						Options:               openapi3filter.Options{},
 						SilenceServersWarning: true,
 						ErrorHandler:          middlewareErrorHandler,
 					},
@@ -143,7 +141,7 @@ func startHttpServer(ctx context.Context, g *errgroup.Group) error {
 	}
 
 	g.Go(func() error {
-		z.Info("starting http server")
+		z.Info("starting the http server")
 		return s.ListenAndServe()
 	})
 
