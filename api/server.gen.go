@@ -57,7 +57,7 @@ type ColumnClaim struct {
 	Datfile string `json:"datfile"`
 
 	// Id Unique ID of the ColumnClaim
-	Id *string `json:"id,omitempty"`
+	Id *int64 `json:"id,omitempty"`
 
 	// IsArray Whether the ColumnClaim is an array
 	IsArray *bool `json:"is_array,omitempty"`
@@ -88,7 +88,7 @@ type ColumnClaimUpdate struct {
 	Datfile *string `json:"datfile,omitempty"`
 
 	// Id Unique ID of the ColumnClaim
-	Id *string `json:"id,omitempty"`
+	Id *int64 `json:"id,omitempty"`
 
 	// IsArray Whether the ColumnClaim is an array
 	IsArray *bool `json:"is_array,omitempty"`
@@ -112,7 +112,7 @@ type Enum struct {
 	ClientLabels map[string]string `json:"client_labels"`
 
 	// Id Unique ID of the Enum
-	Id *string `json:"id,omitempty"`
+	Id *int64 `json:"id,omitempty"`
 
 	// Name User-defined name of the Enum
 	Name string `json:"name"`
@@ -136,7 +136,7 @@ type EnumUpdate struct {
 	ClientLabels *map[string]string `json:"client_labels,omitempty"`
 
 	// Id Unique ID of the Enum
-	Id *string `json:"id,omitempty"`
+	Id *int64 `json:"id,omitempty"`
 
 	// Name User-defined name of the Enum
 	Name *string `json:"name,omitempty"`
@@ -276,13 +276,13 @@ type ServerInterface interface {
 	PutColumnClaims(w http.ResponseWriter, r *http.Request)
 	// Delete a ColumnClaim object
 	// (DELETE /column_claims/{id})
-	DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request, id string)
+	DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request, id int64)
 	// Get a ColumnClaim object
 	// (GET /column_claims/{id})
-	GetColumnClaimsId(w http.ResponseWriter, r *http.Request, id string)
+	GetColumnClaimsId(w http.ResponseWriter, r *http.Request, id int64)
 	// Update a ColumnClaim object
 	// (PUT /column_claims/{id})
-	PutColumnClaimsId(w http.ResponseWriter, r *http.Request, id string)
+	PutColumnClaimsId(w http.ResponseWriter, r *http.Request, id int64)
 	// List all Enum objects
 	// (GET /enums)
 	GetEnums(w http.ResponseWriter, r *http.Request)
@@ -291,13 +291,13 @@ type ServerInterface interface {
 	PutEnums(w http.ResponseWriter, r *http.Request)
 	// Delete a Enum object
 	// (DELETE /enums/{id})
-	DeleteEnumsId(w http.ResponseWriter, r *http.Request, id string)
+	DeleteEnumsId(w http.ResponseWriter, r *http.Request, id int64)
 	// Get a Enum object
 	// (GET /enums/{id})
-	GetEnumsId(w http.ResponseWriter, r *http.Request, id string)
+	GetEnumsId(w http.ResponseWriter, r *http.Request, id int64)
 	// Update a Enum object
 	// (PUT /enums/{id})
-	PutEnumsId(w http.ResponseWriter, r *http.Request, id string)
+	PutEnumsId(w http.ResponseWriter, r *http.Request, id int64)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -343,7 +343,7 @@ func (siw *ServerInterfaceWrapper) DeleteColumnClaimsId(w http.ResponseWriter, r
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -368,7 +368,7 @@ func (siw *ServerInterfaceWrapper) GetColumnClaimsId(w http.ResponseWriter, r *h
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -393,7 +393,7 @@ func (siw *ServerInterfaceWrapper) PutColumnClaimsId(w http.ResponseWriter, r *h
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -446,7 +446,7 @@ func (siw *ServerInterfaceWrapper) DeleteEnumsId(w http.ResponseWriter, r *http.
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -471,7 +471,7 @@ func (siw *ServerInterfaceWrapper) GetEnumsId(w http.ResponseWriter, r *http.Req
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -496,7 +496,7 @@ func (siw *ServerInterfaceWrapper) PutEnumsId(w http.ResponseWriter, r *http.Req
 	var err error
 
 	// ------------- Path parameter "id" -------------
-	var id string
+	var id int64
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -719,7 +719,7 @@ func (response PutColumnClaimsdefaultJSONResponse) VisitPutColumnClaimsResponse(
 }
 
 type DeleteColumnClaimsIdRequestObject struct {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 }
 
 type DeleteColumnClaimsIdResponseObject interface {
@@ -744,7 +744,7 @@ func (response DeleteColumnClaimsId404JSONResponse) VisitDeleteColumnClaimsIdRes
 }
 
 type GetColumnClaimsIdRequestObject struct {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 }
 
 type GetColumnClaimsIdResponseObject interface {
@@ -770,7 +770,7 @@ func (response GetColumnClaimsId404JSONResponse) VisitGetColumnClaimsIdResponse(
 }
 
 type PutColumnClaimsIdRequestObject struct {
-	Id   string `json:"id"`
+	Id   int64 `json:"id"`
 	Body *PutColumnClaimsIdJSONRequestBody
 }
 
@@ -883,7 +883,7 @@ func (response PutEnumsdefaultJSONResponse) VisitPutEnumsResponse(w http.Respons
 }
 
 type DeleteEnumsIdRequestObject struct {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 }
 
 type DeleteEnumsIdResponseObject interface {
@@ -908,7 +908,7 @@ func (response DeleteEnumsId404JSONResponse) VisitDeleteEnumsIdResponse(w http.R
 }
 
 type GetEnumsIdRequestObject struct {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 }
 
 type GetEnumsIdResponseObject interface {
@@ -934,7 +934,7 @@ func (response GetEnumsId404JSONResponse) VisitGetEnumsIdResponse(w http.Respons
 }
 
 type PutEnumsIdRequestObject struct {
-	Id   string `json:"id"`
+	Id   int64 `json:"id"`
 	Body *PutEnumsIdJSONRequestBody
 }
 
@@ -1100,7 +1100,7 @@ func (sh *strictHandler) PutColumnClaims(w http.ResponseWriter, r *http.Request)
 }
 
 // DeleteColumnClaimsId operation middleware
-func (sh *strictHandler) DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) DeleteColumnClaimsId(w http.ResponseWriter, r *http.Request, id int64) {
 	var request DeleteColumnClaimsIdRequestObject
 
 	request.Id = id
@@ -1126,7 +1126,7 @@ func (sh *strictHandler) DeleteColumnClaimsId(w http.ResponseWriter, r *http.Req
 }
 
 // GetColumnClaimsId operation middleware
-func (sh *strictHandler) GetColumnClaimsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) GetColumnClaimsId(w http.ResponseWriter, r *http.Request, id int64) {
 	var request GetColumnClaimsIdRequestObject
 
 	request.Id = id
@@ -1152,7 +1152,7 @@ func (sh *strictHandler) GetColumnClaimsId(w http.ResponseWriter, r *http.Reques
 }
 
 // PutColumnClaimsId operation middleware
-func (sh *strictHandler) PutColumnClaimsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) PutColumnClaimsId(w http.ResponseWriter, r *http.Request, id int64) {
 	var request PutColumnClaimsIdRequestObject
 
 	request.Id = id
@@ -1240,7 +1240,7 @@ func (sh *strictHandler) PutEnums(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteEnumsId operation middleware
-func (sh *strictHandler) DeleteEnumsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) DeleteEnumsId(w http.ResponseWriter, r *http.Request, id int64) {
 	var request DeleteEnumsIdRequestObject
 
 	request.Id = id
@@ -1266,7 +1266,7 @@ func (sh *strictHandler) DeleteEnumsId(w http.ResponseWriter, r *http.Request, i
 }
 
 // GetEnumsId operation middleware
-func (sh *strictHandler) GetEnumsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) GetEnumsId(w http.ResponseWriter, r *http.Request, id int64) {
 	var request GetEnumsIdRequestObject
 
 	request.Id = id
@@ -1292,7 +1292,7 @@ func (sh *strictHandler) GetEnumsId(w http.ResponseWriter, r *http.Request, id s
 }
 
 // PutEnumsId operation middleware
-func (sh *strictHandler) PutEnumsId(w http.ResponseWriter, r *http.Request, id string) {
+func (sh *strictHandler) PutEnumsId(w http.ResponseWriter, r *http.Request, id int64) {
 	var request PutEnumsIdRequestObject
 
 	request.Id = id
@@ -1327,35 +1327,35 @@ func (sh *strictHandler) PutEnumsId(w http.ResponseWriter, r *http.Request, id s
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

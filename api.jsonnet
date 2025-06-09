@@ -97,7 +97,8 @@ local Object(name, type) = {
             'in': 'path',
             required: true,
             schema+: {
-              type: 'string',
+              type: 'integer',
+              format: 'int64',
             },
           },
         ],
@@ -112,15 +113,8 @@ local Object(name, type) = {
           },
         },
         responses+: {
-          '200'+: {
+          '204'+: {
             description: 'Updated',
-            content+: {
-              'application/json'+: {
-                schema+: {
-                  '$ref': '#/components/schemas/' + name,
-                },
-              },
-            },
           },
           '304'+: {
             description: 'Not Modified',
@@ -150,7 +144,8 @@ local Object(name, type) = {
             'in': 'path',
             required: true,
             schema+: {
-              type: 'string',
+              type: 'integer',
+              format: 'int64',
             },
           },
         ],
@@ -180,7 +175,8 @@ local Object(name, type) = {
             'in': 'path',
             required: true,
             schema+: {
-              type: 'string',
+              type: 'integer',
+              format: 'int64',
             },
           },
         ],
@@ -205,7 +201,8 @@ local Object(name, type) = {
 local Common(name) = {
   properties+: {
     id+: {
-      type: 'string',
+      type: 'integer',
+      format: 'int64',
       readOnly: true,
       description: 'Unique ID of the %s' % name,
     },

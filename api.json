@@ -49,8 +49,9 @@
                },
                "id": {
                   "description": "Unique ID of the ColumnClaim",
+                  "format": "int64",
                   "readOnly": true,
-                  "type": "string"
+                  "type": "integer"
                },
                "is_array": {
                   "default": false,
@@ -119,8 +120,9 @@
                },
                "id": {
                   "description": "Unique ID of the ColumnClaim",
+                  "format": "int64",
                   "readOnly": true,
-                  "type": "string"
+                  "type": "integer"
                },
                "is_array": {
                   "default": false,
@@ -165,8 +167,9 @@
                },
                "id": {
                   "description": "Unique ID of the Enum",
+                  "format": "int64",
                   "readOnly": true,
-                  "type": "string"
+                  "type": "integer"
                },
                "name": {
                   "description": "User-defined name of the Enum",
@@ -222,8 +225,9 @@
                },
                "id": {
                   "description": "Unique ID of the Enum",
+                  "format": "int64",
                   "readOnly": true,
-                  "type": "string"
+                  "type": "integer"
                },
                "name": {
                   "description": "User-defined name of the Enum",
@@ -427,7 +431,8 @@
                   "name": "id",
                   "required": true,
                   "schema": {
-                     "type": "string"
+                     "format": "int64",
+                     "type": "integer"
                   }
                }
             ],
@@ -450,7 +455,8 @@
                   "name": "id",
                   "required": true,
                   "schema": {
-                     "type": "string"
+                     "format": "int64",
+                     "type": "integer"
                   }
                }
             ],
@@ -480,7 +486,8 @@
                   "name": "id",
                   "required": true,
                   "schema": {
-                     "type": "string"
+                     "format": "int64",
+                     "type": "integer"
                   }
                }
             ],
@@ -596,7 +603,8 @@
                   "name": "id",
                   "required": true,
                   "schema": {
-                     "type": "string"
+                     "format": "int64",
+                     "type": "integer"
                   }
                }
             ],
@@ -619,7 +627,8 @@
                   "name": "id",
                   "required": true,
                   "schema": {
-                     "type": "string"
+                     "format": "int64",
+                     "type": "integer"
                   }
                }
             ],
@@ -649,7 +658,8 @@
                   "name": "id",
                   "required": true,
                   "schema": {
-                     "type": "string"
+                     "format": "int64",
+                     "type": "integer"
                   }
                }
             ],

@@ -12,10 +12,7 @@ var columnclaimStore = sync.Map{}
 // PUT /v1/columnclaims - Create a new columnclaim
 func (s server) PutColumnClaims(ctx context.Context, request PutColumnClaimsRequestObject) (PutColumnClaimsResponseObject, error) {
 	columnClaim := ColumnClaim(*request.Body)
-	id, err := ID()
-	if err != nil {
-		return nil, err
-	}
+	id := int64(1)
 	columnClaim.Id = &id
 	source := "FIXME"
 	columnClaim.Source = &source
@@ -23,7 +20,7 @@ func (s server) PutColumnClaims(ctx context.Context, request PutColumnClaimsRequ
 	return PutColumnClaims201JSONResponse{
 		Body: columnClaim,
 		Headers: PutColumnClaims201ResponseHeaders{
-			Location: fmt.Sprintf("/column_claims/%s", id),
+			Location: fmt.Sprintf("/column_claims/%d", id),
 		},
 	}, nil
 }

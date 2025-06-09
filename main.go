@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"embed"
 	_ "embed"
 	"fmt"
@@ -16,6 +17,8 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 	"github.com/rs/cors"
@@ -43,8 +46,17 @@ func main() {
 func Run(ctx context.Context) error {
 	z := log.Load(ctx)
 	g, ctx := errgroup.WithContext(ctx)
+	db, err := sql.Open("sqlite3", "file:demo.db")
+	if err != nil {
+		z.Fatal("opening database", zap.Error(err))
+	}
+	defer db.Close()
 
-	if err := startHttpServer(ctx, g); err != nil {
+	if err := dbSetup(ctx, db); err != nil {
+		z.Fatal("setting up database", zap.Error(err))
+	}
+
+	if err := startHttpServer(ctx, db, g); err != nil {
 		return fmt.Errorf("starting http server: %w", err)
 	}
 
@@ -56,7 +68,7 @@ func Run(ctx context.Context) error {
 		return context.Canceled
 	})
 
-	err := g.Wait()
+	err = g.Wait()
 	if err != nil {
 		if err == context.Canceled {
 			return nil
@@ -66,14 +78,14 @@ func Run(ctx context.Context) error {
 	return nil
 }
 
-func startHttpServer(ctx context.Context, g *errgroup.Group) error {
+func startHttpServer(ctx context.Context, db *sql.DB, g *errgroup.Group) error {
 	z := log.Load(ctx)
 	spec, err := openapi3.NewLoader().LoadFromData(specFile)
 	if err != nil {
 		z.Fatal("loading openapi spec", zap.Error(err))
 	}
 
-	server := api.NewServer()
+	server := api.NewServer(db)
 
 	rootMux := http.NewServeMux()
 	rootMux.Handle("GET /healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -158,4 +170,20 @@ func strictMiddlewareExample(next strictnethttp.StrictHTTPHandlerFunc, operation
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (response any, err error) {
 		return next(ctx, w, r, request)
 	}
+}
+
+func dbSetup(ctx context.Context, db *sql.DB) error {
+	_, err := db.ExecContext(ctx, `
+		DROP TABLE IF EXISTS enum;
+		CREATE TABLE enum(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			source VARCHAR(255) NOT NULL,
+			name VARCHAR(128) NOT NULL,
+			client_labels TEXT NOT NULL,
+			server_labels TEXT NOT NULL,
+			vals TEXT NOT NULL,
+			zero_indexed BOOLEAN NOT NULL
+		);
+	`)
+	return err
 }
