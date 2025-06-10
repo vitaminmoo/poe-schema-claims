@@ -61,7 +61,7 @@ func (s server) PutColumnClaimsId(ctx context.Context, request PutColumnClaimsId
 	}
 
 	columnclaimStore.Store(id, columnclaim)
-	return PutColumnClaimsId200JSONResponse(columnclaim), nil
+	return PutColumnClaimsId204Response{}, nil
 }
 
 // GET /v1/columnclaims - List all columnclaims

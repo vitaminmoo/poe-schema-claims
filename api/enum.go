@@ -103,7 +103,7 @@ func (s server) PutEnumsId(ctx context.Context, request PutEnumsIdRequestObject)
 			},
 		}, nil
 	}
-	return PutEnumsId200JSONResponse{}, nil
+	return PutEnumsId204Response{}, nil
 }
 
 // GET /v1/enums - List all Enums

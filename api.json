@@ -502,14 +502,7 @@
                "required": true
             },
             "responses": {
-               "200": {
-                  "content": {
-                     "application/json": {
-                        "schema": {
-                           "$ref": "#/components/schemas/ColumnClaim"
-                        }
-                     }
-                  },
+               "204": {
                   "description": "Updated"
                },
                "304": {
@@ -674,14 +667,7 @@
                "required": true
             },
             "responses": {
-               "200": {
-                  "content": {
-                     "application/json": {
-                        "schema": {
-                           "$ref": "#/components/schemas/Enum"
-                        }
-                     }
-                  },
+               "204": {
                   "description": "Updated"
                },
                "304": {
